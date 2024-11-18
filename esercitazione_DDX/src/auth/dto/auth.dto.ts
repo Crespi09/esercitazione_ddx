@@ -8,4 +8,16 @@ export class AuthDto{
     @IsString()
     @IsNotEmpty()
     password: string
+
+    @IsString()
+    @IsNotEmpty()
+    username : string
+
+    @IsString()
+    @IsNotEmpty()
+    refreshToken : string
+
+    @IsString()
+    @IsNotEmpty()
+    accessToken : string
 }

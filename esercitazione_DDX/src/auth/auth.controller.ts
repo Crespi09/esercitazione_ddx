@@ -8,13 +8,13 @@ export class AuthController{
 
     @Post('signup')
     signup(@Body() dto : AuthDto){
+        console.log(dto); // debug
         return this.authService.signup(dto);
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('signin')
     signin(@Body() dto : AuthDto){
-        // req.user
         return this.authService.signin(dto);
-     }
+    }
 }

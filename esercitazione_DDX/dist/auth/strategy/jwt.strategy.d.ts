@@ -10,9 +10,8 @@ export declare class JwtStrategy extends JwtStrategy_base {
         email: string;
     }): Promise<{
         email: string;
-        hash: string;
         username: string | null;
-        userRefreshToken: string;
+        hash: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;

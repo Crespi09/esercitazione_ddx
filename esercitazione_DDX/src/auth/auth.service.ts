@@ -13,27 +13,29 @@ export class AuthService{
     constructor(private prisma : PrismaService, private jwt: JwtService, private config: ConfigService){}
 
     async signup(dto : AuthDto){
-        // generate the password hash
+        // password hash
         const hash = await argon.hash(dto.password);
         
-        // save new user in the db
 
+        // salva l'utente nel DB 
         try {
+
+            const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
+
             const user = await this.prisma.user.create({
                 data: {
                     email: dto.email,
                     hash,
+                    username : dto.username
+                    // refreshToken : 
                 }
             })
 
-            // return the saved user
+            // vado a generare il l'acces token tramite questi parametri che gli passo
             return this.signToken(user.id, user.email);
 
-
         } catch (error) {
-
             // verifico se l'errore generato viene da prisma o meno
-
             if(error instanceof PrismaClientKnownRequestError){
                 if(error.code === 'P2002'){ // duplicated fields error
                     throw new ForbiddenException('Credentials taken')
@@ -45,30 +47,30 @@ export class AuthService{
 
     async signin(dto: AuthDto){
 
-        // find user by email
+        // trovo l'utente passando l'email
         const user = await this.prisma.user.findUnique({
             where : {
                 email : dto.email,
             }
         })
 
-        // if user does not exist throw exception
+        // controllo
         if(!user) throw new ForbiddenException(
             'Credentials incorrect',
         )
 
-        // compare psw
+        // comparazione password hash
         const pwMatches = await argon.verify(
             user.hash,
             dto.password
         )
 
-        // if psw throw exception
+        // controllo 
         if(!pwMatches) throw new ForbiddenException(
             'Credentials incorrect',
         );
 
-        // send back user
+        // genero access token
         return this.signToken(user.id, user.email);
     }
 
@@ -81,7 +83,7 @@ export class AuthService{
         const secret = this.config.get('JWT_SECRET');
 
         const token = await this.jwt.signAsync(payload, {
-            expiresIn: '15m', // è il tempo dopo il quale il token expire
+            expiresIn: '15m', // è il tempo dopo il quale il token scade
             secret : secret,
         });
 

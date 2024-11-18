@@ -2,9 +2,8 @@ import { User } from "@prisma/client";
 export declare class UserController {
     getMe(user: User): {
         email: string;
-        hash: string;
         username: string | null;
-        userRefreshToken: string;
+        hash: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;

@@ -16,7 +16,6 @@ const argon = require("argon2");
 const library_1 = require("@prisma/client/runtime/library");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const { userInfo } = require("os");
 let AuthService = class AuthService {
     constructor(prisma, jwt, config) {
         this.prisma = prisma;
@@ -30,8 +29,7 @@ let AuthService = class AuthService {
                 data: {
                     email: dto.email,
                     hash,
-                    username : dto.username,
-                    userRefreshToken : dto.userRefreshToken // TODO - da cambiare
+                    username: dto.username
                 }
             });
             return this.signToken(user.id, user.email);

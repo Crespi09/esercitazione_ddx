@@ -1,0 +1,6 @@
+projectKey=esercitazione_ddx
+serverUrl=http://localhost:9000
+serverVersion=10.7.0.96327
+dashboardUrl=http://localhost:9000/dashboard?id=esercitazione_ddx
+ceTaskId=79d4e313-c7ae-4af9-a9f9-348384584e6e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=79d4e313-c7ae-4af9-a9f9-348384584e6e

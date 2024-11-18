@@ -9,20 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthDto = void 0;
+exports.TokenDto = void 0;
 const class_validator_1 = require("class-validator");
-class AuthDto {
+class TokenDto {
 }
-exports.AuthDto = AuthDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/^\S*$/, { message: 'Username must not contain spaces' }),
-    __metadata("design:type", String)
-], AuthDto.prototype, "username", void 0);
+exports.TokenDto = TokenDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], AuthDto.prototype, "password", void 0);
-//# sourceMappingURL=auth.dto.js.map
+], TokenDto.prototype, "refreshToken", void 0);
+//# sourceMappingURL=token.dto.js.map

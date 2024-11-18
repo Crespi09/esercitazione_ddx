@@ -5,7 +5,6 @@ import * as argon from 'argon2'
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { access } from "fs";
 
 
 @Injectable({})
@@ -16,23 +15,28 @@ export class AuthService{
         // password hash
         const hash = await argon.hash(dto.password);
         
-
         // salva l'utente nel DB 
         try {
-
-            const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
-
             const user = await this.prisma.user.create({
                 data: {
-                    email: dto.email,
+                    username: dto.username,
                     hash,
-                    username : dto.username
-                    // refreshToken : 
                 }
             })
 
-            // vado a generare il l'acces token tramite questi parametri che gli passo
-            return this.signToken(user.id, user.email);
+            // vado a generare i token
+            const tokens = await this.signToken(user.id, user.username, true);
+
+            // vado ad hashare il token
+            const refreshTokenHash = await argon.hash(tokens.refresh_token!);
+
+            // e salvarlo nel db
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken: refreshTokenHash },
+            });
+
+            return tokens;
 
         } catch (error) {
             // verifico se l'errore generato viene da prisma o meno
@@ -46,14 +50,14 @@ export class AuthService{
     }
 
     async signin(dto: AuthDto){
-
         // trovo l'utente passando l'email
         const user = await this.prisma.user.findUnique({
             where : {
-                email : dto.email,
+                username : dto.username,
             }
         })
 
+        console.log(user);
         // controllo
         if(!user) throw new ForbiddenException(
             'Credentials incorrect',
@@ -70,28 +74,96 @@ export class AuthService{
             'Credentials incorrect',
         );
 
-        // genero access token
-        return this.signToken(user.id, user.email);
+        // va a generare l'access token
+        const tokens = await this.signToken(user.id, user.username, true);
+
+        // vado ad hashare il token
+        const refreshTokenHash = await argon.hash(tokens.refresh_token!);
+
+        // e salvarlo nel db
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: refreshTokenHash },
+        });
+
+        return tokens;
+    }
+
+    // metodo per verificare la validità dell'access token
+    async verifyAccessToken(token: string): Promise<boolean> {
+        try {
+            await this.jwt.verifyAsync(token, {
+                secret: this.config.get('JWT_SECRET'),
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    // metodo per rinnovare i token usando il refresh token
+    async refreshTokens(refreshToken: string): Promise<{ access_token: string }> {
+        try {
+            // decodifico il refresh token
+            const decoded: any = await this.jwt.verifyAsync(refreshToken, {
+                secret: this.config.get('JWT_REFRESH_SECRET'),
+            });
+
+            // vado a prendere l'utente usando l'id dal token
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: decoded.sub,
+                },
+            });
+
+            if (!user) {
+                throw new ForbiddenException('User not found');
+            }
+
+            // Verifica se il refresh token è valido confrontando con quello salvato nel DB
+            const refreshTokenMatches = await argon.verify(user.refreshToken, refreshToken);
+            if (!refreshTokenMatches) {
+                throw new ForbiddenException('Invalid refresh token');
+            }
+
+            // Crea un nuovo access token
+            const newTokens = await this.signToken(user.id, user.username, false);
+
+            return { access_token: newTokens.access_token };
+        } catch (error) {
+            throw new ForbiddenException('Invalid refresh token or session expired');
+        }
     }
 
 
-    async signToken(userId: number, email: string): Promise<{ access_token : string }>{
+    // metodo per generare i token
+
+    async signToken(userId: number, email: string, generateRefreshToken : boolean): Promise<{ access_token : string; refresh_token? : string}>{
         const payload = {
             sub: userId, // convezione di jwt dove sub deve avere un' identificativo univoco
             email
         };
-        const secret = this.config.get('JWT_SECRET');
+        const accessSecret = this.config.get('JWT_SECRET');
+        const refreshSecret = this.config.get('JWT_REFRESH_SECRET')
 
-        const token = await this.jwt.signAsync(payload, {
-            expiresIn: '15m', // è il tempo dopo il quale il token scade
-            secret : secret,
+        // genero un accessToken
+        const accessToken = await this.jwt.signAsync(payload, {
+            expiresIn: '1m', // è il tempo dopo il quale il token scade (1 min per test)
+            secret : accessSecret,
         });
 
+        // vado a generare il refreshToken solo in determinati casi 
+        let refreshToken: string | undefined;
+        if(generateRefreshToken){
+            refreshToken = await this.jwt.signAsync(payload, {
+                expiresIn: '7d',
+                secret : refreshSecret,
+            });
+        }
 
         return {
-            access_token: token,
+            access_token: accessToken,
+            refresh_token: refreshToken,
         };
-
-
     }
 }

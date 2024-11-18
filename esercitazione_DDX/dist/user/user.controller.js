@@ -20,7 +20,6 @@ let UserController = class UserController {
     getMe(user) {
         return user;
     }
-    ediUser() { }
 };
 exports.UserController = UserController;
 __decorate([
@@ -31,12 +30,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getMe", null);
-__decorate([
-    (0, common_1.Patch)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "ediUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users')
 ], UserController);

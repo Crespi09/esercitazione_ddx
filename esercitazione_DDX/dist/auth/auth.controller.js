@@ -21,11 +21,15 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     signup(dto) {
-        console.log(dto);
         return this.authService.signup(dto);
     }
     signin(dto) {
+        console.log(dto);
         return this.authService.signin(dto);
+    }
+    updateJWT(dto) {
+        console.log(dto);
+        return this.authService.refreshTokens(dto.refreshToken);
     }
 };
 exports.AuthController = AuthController;
@@ -44,6 +48,13 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.AuthDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signin", null);
+__decorate([
+    (0, common_1.Post)('refreshToken'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.TokenDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "updateJWT", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

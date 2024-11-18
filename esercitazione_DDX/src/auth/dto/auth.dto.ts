@@ -1,23 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator"
 
 export class AuthDto{
-    @IsEmail()
+    @IsString()
     @IsNotEmpty()
-    email : string
+    @Matches(/^\S*$/, { message: 'Username must not contain spaces' })
+    username? : string
 
     @IsString()
     @IsNotEmpty()
     password: string
 
-    @IsString()
-    @IsNotEmpty()
-    username : string
 
-    @IsString()
-    @IsNotEmpty()
-    refreshToken : string
-
-    @IsString()
-    @IsNotEmpty()
-    accessToken : string
 }

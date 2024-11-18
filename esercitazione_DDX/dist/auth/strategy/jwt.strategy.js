@@ -29,8 +29,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
                 id: payload.sub,
             },
         });
-        delete user.hash;
-        return user;
+        return { username: user.username };
     }
 };
 exports.JwtStrategy = JwtStrategy;

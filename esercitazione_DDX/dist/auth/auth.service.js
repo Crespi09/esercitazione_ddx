@@ -27,12 +27,17 @@ let AuthService = class AuthService {
         try {
             const user = await this.prisma.user.create({
                 data: {
-                    email: dto.email,
+                    username: dto.username,
                     hash,
-                    username: dto.username
                 }
             });
-            return this.signToken(user.id, user.email);
+            const tokens = await this.signToken(user.id, user.username, true);
+            const refreshTokenHash = await argon.hash(tokens.refresh_token);
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken: refreshTokenHash },
+            });
+            return tokens;
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
@@ -46,28 +51,79 @@ let AuthService = class AuthService {
     async signin(dto) {
         const user = await this.prisma.user.findUnique({
             where: {
-                email: dto.email,
+                username: dto.username,
             }
         });
+        console.log(user);
         if (!user)
             throw new common_1.ForbiddenException('Credentials incorrect');
         const pwMatches = await argon.verify(user.hash, dto.password);
         if (!pwMatches)
             throw new common_1.ForbiddenException('Credentials incorrect');
-        return this.signToken(user.id, user.email);
+        const tokens = await this.signToken(user.id, user.username, true);
+        const refreshTokenHash = await argon.hash(tokens.refresh_token);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: refreshTokenHash },
+        });
+        return tokens;
     }
-    async signToken(userId, email) {
+    async verifyAccessToken(token) {
+        try {
+            await this.jwt.verifyAsync(token, {
+                secret: this.config.get('JWT_SECRET'),
+            });
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    async refreshTokens(refreshToken) {
+        try {
+            const decoded = await this.jwt.verifyAsync(refreshToken, {
+                secret: this.config.get('JWT_REFRESH_SECRET'),
+            });
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: decoded.sub,
+                },
+            });
+            if (!user) {
+                throw new common_1.ForbiddenException('User not found');
+            }
+            const refreshTokenMatches = await argon.verify(user.refreshToken, refreshToken);
+            if (!refreshTokenMatches) {
+                throw new common_1.ForbiddenException('Invalid refresh token');
+            }
+            const newTokens = await this.signToken(user.id, user.username, false);
+            return { access_token: newTokens.access_token };
+        }
+        catch (error) {
+            throw new common_1.ForbiddenException('Invalid refresh token or session expired');
+        }
+    }
+    async signToken(userId, email, generateRefreshToken) {
         const payload = {
             sub: userId,
             email
         };
-        const secret = this.config.get('JWT_SECRET');
-        const token = await this.jwt.signAsync(payload, {
-            expiresIn: '15m',
-            secret: secret,
+        const accessSecret = this.config.get('JWT_SECRET');
+        const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
+        const accessToken = await this.jwt.signAsync(payload, {
+            expiresIn: '1m',
+            secret: accessSecret,
         });
+        let refreshToken;
+        if (generateRefreshToken) {
+            refreshToken = await this.jwt.signAsync(payload, {
+                expiresIn: '7d',
+                secret: refreshSecret,
+            });
+        }
         return {
-            access_token: token,
+            access_token: accessToken,
+            refresh_token: refreshToken,
         };
     }
 };

@@ -15,7 +15,6 @@ export declare class AuthService {
         access_token: string;
         refresh_token?: string;
     }>;
-    verifyAccessToken(token: string): Promise<boolean>;
     refreshTokens(refreshToken: string): Promise<{
         access_token: string;
     }>;

@@ -54,7 +54,6 @@ let AuthService = class AuthService {
                 username: dto.username,
             }
         });
-        console.log(user);
         if (!user)
             throw new common_1.ForbiddenException('Credentials incorrect');
         const pwMatches = await argon.verify(user.hash, dto.password);
@@ -67,17 +66,6 @@ let AuthService = class AuthService {
             data: { refreshToken: refreshTokenHash },
         });
         return tokens;
-    }
-    async verifyAccessToken(token) {
-        try {
-            await this.jwt.verifyAsync(token, {
-                secret: this.config.get('JWT_SECRET'),
-            });
-            return true;
-        }
-        catch (error) {
-            return false;
-        }
     }
     async refreshTokens(refreshToken) {
         try {

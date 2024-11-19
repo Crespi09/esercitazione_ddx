@@ -57,7 +57,7 @@ export class AuthService{
             }
         })
 
-        console.log(user);
+        //console.log(user); // debug
         // controllo
         if(!user) throw new ForbiddenException(
             'Credentials incorrect',
@@ -87,18 +87,6 @@ export class AuthService{
         });
 
         return tokens;
-    }
-
-    // metodo per verificare la validità dell'access token
-    async verifyAccessToken(token: string): Promise<boolean> {
-        try {
-            await this.jwt.verifyAsync(token, {
-                secret: this.config.get('JWT_SECRET'),
-            });
-            return true;
-        } catch (error) {
-            return false;
-        }
     }
 
     // metodo per rinnovare i token usando il refresh token
@@ -137,7 +125,6 @@ export class AuthService{
 
 
     // metodo per generare i token
-
     async signToken(userId: number, email: string, generateRefreshToken : boolean): Promise<{ access_token : string; refresh_token? : string}>{
         const payload = {
             sub: userId, // convezione di jwt dove sub deve avere un' identificativo univoco

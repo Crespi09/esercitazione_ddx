@@ -20,3 +20,10 @@ model User {
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 }
+
+
+
+// USER ->    ID, username, password, refreshToken
+// ITEMS ->   ID, owner_id, name, parent_id = null, color, updatedAt, createAt
+// FILES ->   ID, fileType, fileName, storage, path,
+// SHARED ->  ID, item_id, shared_with_id

@@ -5,16 +5,16 @@ import { JwtGuard } from "src/auth/guard";
 
 @UseGuards(JwtGuard) // serve per andare ad utilizzare l'access token per le chiamate api, senza da errore
 @Controller('users')
-export class UserController{
+export class UserController {
     // constructor(private userService: UserService)
-    
+
     @Get('me')
-    getMe(@GetUser()  user: User){
+    getMe(@GetUser() user: User) {
         return user;
-    } 
+    }
 
     @Post()
-    updateUser(@GetUser() user: User){
+    updateUser(@GetUser() user: User) {
         // return this.userService.
     }
 

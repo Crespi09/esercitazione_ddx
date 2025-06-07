@@ -3,9 +3,10 @@ export declare class UserController {
     getMe(user: User): {
         username: string;
         refreshToken: string | null;
+        id: number;
         hash: string;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
     };
+    updateUser(user: User): void;
 }

@@ -20,17 +20,26 @@ let UserController = class UserController {
     getMe(user) {
         return user;
     }
+    updateUser(user) {
+    }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Get)('me'),
     __param(0, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getMe", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "updateUser", null);
 exports.UserController = UserController = __decorate([
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('users')
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

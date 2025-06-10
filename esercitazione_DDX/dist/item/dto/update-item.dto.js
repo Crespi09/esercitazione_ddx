@@ -9,18 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FolderDto = void 0;
+exports.UpdateItemDto = void 0;
 const class_validator_1 = require("class-validator");
-class FolderDto {
+class UpdateItemDto {
 }
-exports.FolderDto = FolderDto;
+exports.UpdateItemDto = UpdateItemDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(2),
-    __metadata("design:type", String)
-], FolderDto.prototype, "name", void 0);
-__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], FolderDto.prototype, "color", void 0);
-//# sourceMappingURL=folder.dto.js.map
+], UpdateItemDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateItemDto.prototype, "color", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateItemDto.prototype, "parentId", void 0);
+//# sourceMappingURL=update-item.dto.js.map

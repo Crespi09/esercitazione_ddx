@@ -1,20 +1,23 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { FolderDto } from "./dto/item.dto";
+import { ItemDto } from "./dto/item.dto";
 import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { UpdateItemDto } from "./dto/update-item.dto";
 
 @Injectable({})
-export class FolderService {
+export class ItemService {
     constructor(private prisma: PrismaService) { }
 
 
-    async createItem(dto: FolderDto, user: User) {
+    async createItem(dto: ItemDto, user: User) {
+
         try {
             const item = await this.prisma.item.create({
                 data: {
                     name: dto.name,
                     color: dto.color,
+                    ...(dto.parentId && { parent: { connect: { id: parseInt(dto.parentId) } } }),
                     owner: { connect: { id: user.id } },
 
                     createdAt: new Date(),
@@ -32,22 +35,23 @@ export class FolderService {
         }
     }
 
-    async updateItem(id: string, dto: FolderDto) {
+    async updateItem(id: string, dto: UpdateItemDto) {
 
         if (!id) {
             throw new ForbiddenException('Id is required');
         }
 
-        if (!dto.name || !dto.color) {
-            throw new ForbiddenException('Name and color are required');
+        if (!dto.name && !dto.color && !dto.parentId) {
+            throw new ForbiddenException('Name, color or parentId are required');
         }
 
         try {
             const item = await this.prisma.item.update({
                 where: { id: parseInt(id) },
                 data: {
-                    name: dto.name,
-                    color: dto.color,
+                    ...(dto.name && { name: dto.name }),
+                    ...(dto.color && { color: dto.color }),
+                    ...(dto.parentId && { parent: { connect: { id: parseInt(dto.parentId) } } }),
                     updatedAt: new Date()
                 }
             })

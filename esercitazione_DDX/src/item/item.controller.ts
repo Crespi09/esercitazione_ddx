@@ -1,48 +1,52 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { JwtGuard } from "src/auth/guard";
-import { FolderService } from "./item.service";
-import { FolderDto } from "./dto/item.dto";
+import { ItemService } from "./item.service";
+import { ItemDto } from "./dto/item.dto";
 import { GetUser } from "src/auth/decorator";
 import { User } from "@prisma/client";
+import { UpdateItemDto } from "./dto/update-item.dto";
 
 @UseGuards(JwtGuard)
-@Controller('folder')
-export class FolderController {
-    constructor(private folderService: FolderService) { }
+@Controller('item')
+export class ItemController {
+    constructor(private itemService: ItemService) { }
 
-    // @ API creazione cartella
-    // @ API modifica cartella
-    // @ API elimina cartella
+    // @ API creazione item
+    // @ API modifica item
+    // @ API elimina item
 
     // ---- ricerche basate su filtri ----
-    // @ API get tutte le cartelle
-    // @ API get cartella singola
+    // @ API get tutti gli item
+    // @ API get item singolo
 
 
-    @Post()
-    createItem(@Body() dto: FolderDto, @GetUser() user: User) {
-        return this.folderService.createItem(dto, user);
+    @Post('')
+    @HttpCode(HttpStatus.CREATED) // 201
+    createItem(@Body() dto: ItemDto, @GetUser() user: User) {
+        return this.itemService.createItem(dto, user);
     }
 
     @Put(':id')
-    updateItem(@Param('id') id: string, @Body() dto: FolderDto) {
-        return this.folderService.updateItem(id, dto);
+    @HttpCode(HttpStatus.OK) // 200
+    updateItem(@Param('id') id: string, @Body() dto: UpdateItemDto) {
+        return this.itemService.updateItem(id, dto);
     }
 
     @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT) // 204
     deleteItem(@Param('id') id: string) {
-        return this.folderService.deleteItem(id);
+        return this.itemService.deleteItem(id);
     }
 
 
-    @Get(':limit/:offset')
+    @Get('all/:limit/:offset')
     allItems(@Param('limit') limit: string, @Param('offset') offset: string) {
-        return this.folderService.allItems(parseInt(limit), parseInt(offset));
+        return this.itemService.allItems(parseInt(limit), parseInt(offset));
     }
 
-    @Get('/id')
+    @Get(':id')
     singleItem(@Param('id') id: string) {
-        return this.folderService.singleItem(id);
+        return this.itemService.singleItem(id);
     }
 
 }

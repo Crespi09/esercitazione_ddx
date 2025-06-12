@@ -19,15 +19,40 @@ let ItemService = class ItemService {
     }
     async createItem(dto, user) {
         try {
+            if (dto.parentId) {
+                const parentId = parseInt(dto.parentId);
+                if (isNaN(parentId)) {
+                    throw new common_1.ForbiddenException('Parent ID deve essere un numero valido');
+                }
+                const parentExists = await this.prisma.item.findUnique({
+                    where: { id: parentId },
+                });
+                if (!parentExists) {
+                    throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
+                }
+                if (parentExists.ownerId !== user.id) {
+                    throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
+                }
+            }
             const item = await this.prisma.item.create({
                 data: {
                     name: dto.name,
                     color: dto.color,
-                    ...(dto.parentId && { parent: { connect: { id: parseInt(dto.parentId) } } }),
+                    ...(dto.parentId
+                        ? {
+                            parent: {
+                                connect: {
+                                    id: parseInt(dto.parentId)
+                                        ? parseInt(dto.parentId)
+                                        : undefined,
+                                },
+                            },
+                        }
+                        : {}),
                     owner: { connect: { id: user.id } },
                     createdAt: new Date(),
-                    updatedAt: new Date()
-                }
+                    updatedAt: new Date(),
+                },
             });
         }
         catch (error) {
@@ -52,9 +77,11 @@ let ItemService = class ItemService {
                 data: {
                     ...(dto.name && { name: dto.name }),
                     ...(dto.color && { color: dto.color }),
-                    ...(dto.parentId && { parent: { connect: { id: parseInt(dto.parentId) } } }),
-                    updatedAt: new Date()
-                }
+                    ...(dto.parentId && {
+                        parent: { connect: { id: parseInt(dto.parentId) } },
+                    }),
+                    updatedAt: new Date(),
+                },
             });
             return item;
         }
@@ -73,7 +100,7 @@ let ItemService = class ItemService {
         }
         try {
             const item = await this.prisma.item.delete({
-                where: { id: parseInt(id) }
+                where: { id: parseInt(id) },
             });
             return item;
         }
@@ -94,7 +121,7 @@ let ItemService = class ItemService {
             const items = await this.prisma.item.findMany({
                 take: limit,
                 skip: offset,
-                orderBy: { createdAt: 'desc' }
+                orderBy: { createdAt: 'desc' },
             });
             return items;
         }
@@ -108,7 +135,7 @@ let ItemService = class ItemService {
         }
         try {
             const item = await this.prisma.item.findUnique({
-                where: { id: parseInt(id) }
+                where: { id: parseInt(id) },
             });
             return item;
         }

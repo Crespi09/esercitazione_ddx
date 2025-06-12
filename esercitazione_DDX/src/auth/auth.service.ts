@@ -135,7 +135,7 @@ export class AuthService {
 
         // genero un accessToken
         const accessToken = await this.jwt.signAsync(payload, {
-            expiresIn: '25m', // è il tempo dopo il quale il token scade (1 min per test)
+            expiresIn: '30m', // è il tempo dopo il quale il token scade (30 min)
             secret: accessSecret,
         });
 

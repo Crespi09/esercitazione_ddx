@@ -77,7 +77,6 @@ __decorate([
 ], ItemController.prototype, "allItems", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

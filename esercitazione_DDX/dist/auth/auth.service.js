@@ -99,7 +99,7 @@ let AuthService = class AuthService {
         const accessSecret = this.config.get('JWT_SECRET');
         const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
         const accessToken = await this.jwt.signAsync(payload, {
-            expiresIn: '25m',
+            expiresIn: '30m',
             secret: accessSecret,
         });
         let refreshToken;

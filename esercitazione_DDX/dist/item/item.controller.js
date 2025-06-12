@@ -67,15 +67,17 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "deleteItem", null);
 __decorate([
-    (0, common_1.Get)('all/:limit/:offset'),
-    __param(0, (0, common_1.Param)('limit')),
-    __param(1, (0, common_1.Param)('offset')),
+    (0, common_1.Get)('all'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Query)('limit')),
+    __param(1, (0, common_1.Query)('offset')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "allItems", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

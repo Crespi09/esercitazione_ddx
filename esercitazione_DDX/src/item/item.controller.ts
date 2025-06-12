@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { JwtGuard } from "src/auth/guard";
 import { ItemService } from "./item.service";
 import { ItemDto } from "./dto/item.dto";
@@ -39,8 +39,9 @@ export class ItemController {
     }
 
 
-    @Get('all/:limit/:offset')
-    allItems(@Param('limit') limit: string, @Param('offset') offset: string) {
+    @Get('all')
+    @HttpCode(HttpStatus.OK) // 200
+    allItems(@Query('limit') limit: string, @Query('offset') offset: string) {
         return this.itemService.allItems(parseInt(limit), parseInt(offset));
     }
 

@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ItemModule } from './item/item.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { ItemModule } from './item/item.module';
     }), // serve per caricare .evn file nel progetto
     AuthModule,
     UserModule,
-    ItemModule
+    ItemModule,
+    FileModule
   ],
   controllers: [AppController],
   providers: [AppService],

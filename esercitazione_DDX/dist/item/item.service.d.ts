@@ -6,7 +6,7 @@ export declare class ItemService {
     private prisma;
     constructor(prisma: PrismaService);
     createItem(dto: ItemDto, user: User): Promise<void>;
-    updateItem(id: string, dto: UpdateItemDto): Promise<{
+    updateItem(id: string, dto: UpdateItemDto, user: User): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;
@@ -15,7 +15,7 @@ export declare class ItemService {
         parentId: number | null;
         ownerId: number;
     }>;
-    deleteItem(id: string): Promise<{
+    deleteItem(id: string, user: User): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;
@@ -24,7 +24,7 @@ export declare class ItemService {
         parentId: number | null;
         ownerId: number;
     }>;
-    allItems(limit: number, offset: number): Promise<{
+    allItems(limit: number, offset: number, user: User): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;
@@ -33,7 +33,7 @@ export declare class ItemService {
         parentId: number | null;
         ownerId: number;
     }[]>;
-    singleItem(id: string): Promise<{
+    singleItem(id: string, user: User): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;

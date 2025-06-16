@@ -26,17 +26,17 @@ let ItemController = class ItemController {
     createItem(dto, user) {
         return this.itemService.createItem(dto, user);
     }
-    updateItem(id, dto) {
-        return this.itemService.updateItem(id, dto);
+    updateItem(id, dto, user) {
+        return this.itemService.updateItem(id, dto, user);
     }
-    deleteItem(id) {
-        return this.itemService.deleteItem(id);
+    deleteItem(id, user) {
+        return this.itemService.deleteItem(id, user);
     }
-    allItems(limit, offset) {
-        return this.itemService.allItems(parseInt(limit), parseInt(offset));
+    allItems(limit, offset, user) {
+        return this.itemService.allItems(parseInt(limit), parseInt(offset), user);
     }
-    singleItem(id) {
-        return this.itemService.singleItem(id);
+    singleItem(id, user) {
+        return this.itemService.singleItem(id, user);
     }
 };
 exports.ItemController = ItemController;
@@ -54,16 +54,18 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_item_dto_1.UpdateItemDto]),
+    __metadata("design:paramtypes", [String, update_item_dto_1.UpdateItemDto, Object]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "updateItem", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "deleteItem", null);
 __decorate([
@@ -71,15 +73,17 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Query)('limit')),
     __param(1, (0, common_1.Query)('offset')),
+    __param(2, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "allItems", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "singleItem", null);
 exports.ItemController = ItemController = __decorate([

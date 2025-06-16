@@ -64,12 +64,22 @@ let ItemService = class ItemService {
             throw error;
         }
     }
-    async updateItem(id, dto) {
+    async updateItem(id, dto, user) {
+        const parentId = parseInt(dto.parentId);
         if (!id) {
             throw new common_1.ForbiddenException('Id is required');
         }
-        if (!dto.name && !dto.color && !dto.parentId) {
+        if (!dto.name && !dto.color && !parentId) {
             throw new common_1.ForbiddenException('Name, color or parentId are required');
+        }
+        const parentExists = await this.prisma.item.findUnique({
+            where: { id: parentId },
+        });
+        if (!parentExists) {
+            throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
+        }
+        if (parentExists.ownerId !== user.id) {
+            throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
         }
         try {
             const item = await this.prisma.item.update({
@@ -77,8 +87,8 @@ let ItemService = class ItemService {
                 data: {
                     ...(dto.name && { name: dto.name }),
                     ...(dto.color && { color: dto.color }),
-                    ...(dto.parentId && {
-                        parent: { connect: { id: parseInt(dto.parentId) } },
+                    ...(parentId && {
+                        parent: { connect: { id: parentId } },
                     }),
                     updatedAt: new Date(),
                 },
@@ -94,13 +104,19 @@ let ItemService = class ItemService {
             throw error;
         }
     }
-    async deleteItem(id) {
+    async deleteItem(id, user) {
         if (!id) {
             throw new common_1.ForbiddenException('Id is required');
         }
         try {
             const item = await this.prisma.item.delete({
-                where: { id: parseInt(id) },
+                where: {
+                    id: parseInt(id), owner: {
+                        is: {
+                            id: user.id,
+                        }
+                    }
+                },
             });
             return item;
         }
@@ -113,15 +129,28 @@ let ItemService = class ItemService {
             throw error;
         }
     }
-    async allItems(limit, offset) {
-        if (!limit || !offset) {
+    async allItems(limit, offset, user) {
+        if (limit === undefined || limit === null || offset === undefined || offset === null) {
             throw new common_1.ForbiddenException('Limit and offset are required');
+        }
+        if (limit <= 0) {
+            throw new common_1.ForbiddenException('Limit must be greater than 0');
+        }
+        if (offset < 0) {
+            throw new common_1.ForbiddenException('Offset must be greater than or equal to 0');
         }
         try {
             const items = await this.prisma.item.findMany({
                 take: limit,
                 skip: offset,
                 orderBy: { createdAt: 'desc' },
+                where: {
+                    owner: {
+                        is: {
+                            id: user.id,
+                        }
+                    }
+                },
             });
             return items;
         }
@@ -129,13 +158,19 @@ let ItemService = class ItemService {
             throw error;
         }
     }
-    async singleItem(id) {
+    async singleItem(id, user) {
         if (!id) {
             throw new common_1.ForbiddenException('Id is required');
         }
         try {
             const item = await this.prisma.item.findUnique({
-                where: { id: parseInt(id) },
+                where: {
+                    id: parseInt(id), owner: {
+                        is: {
+                            id: user.id,
+                        }
+                    }
+                },
             });
             return item;
         }

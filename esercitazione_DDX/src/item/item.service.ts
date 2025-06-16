@@ -7,7 +7,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 
 @Injectable({})
 export class ItemService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createItem(dto: ItemDto, user: User) {
     try {
@@ -41,14 +41,14 @@ export class ItemService {
           color: dto.color,
           ...(dto.parentId
             ? {
-                parent: {
-                  connect: {
-                    id: parseInt(dto.parentId)
-                      ? parseInt(dto.parentId)
-                      : undefined,
-                  },
+              parent: {
+                connect: {
+                  id: parseInt(dto.parentId)
+                    ? parseInt(dto.parentId)
+                    : undefined,
                 },
-              }
+              },
+            }
             : {}),
           owner: { connect: { id: user.id } },
 
@@ -67,14 +67,32 @@ export class ItemService {
     }
   }
 
-  async updateItem(id: string, dto: UpdateItemDto) {
+  async updateItem(id: string, dto: UpdateItemDto, user: User) {
+    const parentId = parseInt(dto.parentId);
+
     if (!id) {
       throw new ForbiddenException('Id is required');
     }
 
-    if (!dto.name && !dto.color && !dto.parentId) {
+    if (!dto.name && !dto.color && !parentId) {
       throw new ForbiddenException('Name, color or parentId are required');
     }
+
+    const parentExists = await this.prisma.item.findUnique({
+      where: { id: parentId },
+    });
+
+    if (!parentExists) {
+      throw new NotFoundException(`Parent con ID ${parentId} non trovato`);
+    }
+
+    // Verifica che l'utente sia proprietario del parent
+    if (parentExists.ownerId !== user.id) {
+      throw new ForbiddenException(
+        'Non hai i permessi per utilizzare questo parent',
+      );
+    }
+
 
     try {
       const item = await this.prisma.item.update({
@@ -82,8 +100,8 @@ export class ItemService {
         data: {
           ...(dto.name && { name: dto.name }),
           ...(dto.color && { color: dto.color }),
-          ...(dto.parentId && {
-            parent: { connect: { id: parseInt(dto.parentId) } },
+          ...(parentId && {
+            parent: { connect: { id: parentId } },
           }),
           updatedAt: new Date(),
         },
@@ -100,17 +118,23 @@ export class ItemService {
     }
   }
 
-  async deleteItem(id: string) {
+  async deleteItem(id: string, user: User) {
     if (!id) {
       throw new ForbiddenException('Id is required');
     }
 
     try {
       const item = await this.prisma.item.delete({
-        where: { id: parseInt(id) },
+        where: {
+          id: parseInt(id), owner: {
+            is: {
+              id: user.id,
+            }
+          }
+        },
       });
 
-      
+
       return item;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -123,9 +147,17 @@ export class ItemService {
     }
   }
 
-  async allItems(limit: number, offset: number) {
-    if (!limit || !offset) {
+  async allItems(limit: number, offset: number, user: User) {
+    if (limit === undefined || limit === null || offset === undefined || offset === null) {
       throw new ForbiddenException('Limit and offset are required');
+    }
+
+    if (limit <= 0) {
+      throw new ForbiddenException('Limit must be greater than 0');
+    }
+
+    if (offset < 0) {
+      throw new ForbiddenException('Offset must be greater than or equal to 0');
     }
 
     try {
@@ -133,6 +165,13 @@ export class ItemService {
         take: limit,
         skip: offset,
         orderBy: { createdAt: 'desc' },
+        where: {
+          owner: {
+            is: {
+              id: user.id,
+            }
+          }
+        },
       });
       return items;
     } catch (error) {
@@ -140,14 +179,20 @@ export class ItemService {
     }
   }
 
-  async singleItem(id: string) {
+  async singleItem(id: string, user: User) {
     if (!id) {
       throw new ForbiddenException('Id is required');
     }
 
     try {
       const item = await this.prisma.item.findUnique({
-        where: { id: parseInt(id) },
+        where: {
+          id: parseInt(id), owner: {
+            is: {
+              id: user.id,
+            }
+          }
+        },
       });
       return item;
     } catch (error) {

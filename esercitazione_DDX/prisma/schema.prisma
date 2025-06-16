@@ -9,66 +9,66 @@ datasource db {
 
 // user table
 model User {
-  id              Int       @id @default(autoincrement())
-  username        String    @unique
-  hash            String
-  refreshToken    String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  hash         String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
   // Relazioni
-  items           Item[]
-  sharedWithMe    Shared[]  @relation("SharedWith")
+  items        Item[]
+  sharedWithMe Shared[] @relation("SharedWith")
 }
 
 // ITEMS ->   ID, owner_id, name, parent_id = null, color, updatedAt, createAt
 model Item {
-  id              Int       @id @default(autoincrement())
-  name            String
-  color           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relazioni
-  owner           User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId         Int       // FK riferimento all'utente proprietario
-  
-  parent          Item?     @relation("ItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId        Int?      // FK autoreferenziante per struttura gerarchica
-  
-  children        Item[]    @relation("ItemHierarchy")
-  file            File?     // Relazione opzionale con un file
-  shared          Shared[]  // Item condivisi con altri utenti
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId Int // FK riferimento all'utente proprietario
+
+  parent   Item? @relation("ItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId Int? // FK autoreferenziante per struttura gerarchica
+
+  children Item[]   @relation("ItemHierarchy")
+  file     File? // Relazione opzionale con un file
+  shared   Shared[] // Item condivisi con altri utenti
 }
 
 // FILES ->   ID, fileType, fileName, storage, path, updatedAt, createAt
 model File {
-  id              Int       @id @default(autoincrement())
-  fileType        String
-  fileName        String
-  storage         String
-  path            String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  id        Int      @id @default(autoincrement())
+  fileType  String
+  fileName  String
+  storage   Float
+  path      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relazioni
-  item            Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId          Int       @unique // Relazione 1:1 con Item
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int  @unique // Relazione 1:1 con Item
 }
 
 // SHARED ->  ID, item_id, shared_with_id, updatedAt, createAt
 model Shared {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relazioni
-  item            Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId          Int
-  
-  sharedWith      User      @relation("SharedWith", fields: [sharedWithId], references: [id], onDelete: Cascade)
-  sharedWithId    Int
-  
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int
+
+  sharedWith   User @relation("SharedWith", fields: [sharedWithId], references: [id], onDelete: Cascade)
+  sharedWithId Int
+
   // Indice composito per evitare condivisioni duplicate
   @@unique([itemId, sharedWithId])
 }

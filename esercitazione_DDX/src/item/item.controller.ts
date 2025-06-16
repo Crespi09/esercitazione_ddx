@@ -28,26 +28,26 @@ export class ItemController {
 
     @Put(':id')
     @HttpCode(HttpStatus.OK) // 200
-    updateItem(@Param('id') id: string, @Body() dto: UpdateItemDto) {
-        return this.itemService.updateItem(id, dto);
+    updateItem(@Param('id') id: string, @Body() dto: UpdateItemDto, @GetUser() user: User) {
+        return this.itemService.updateItem(id, dto, user);
     }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT) // 204
-    deleteItem(@Param('id') id: string) {
-        return this.itemService.deleteItem(id);
+    deleteItem(@Param('id') id: string, @GetUser() user: User) {
+        return this.itemService.deleteItem(id, user);
     }
 
 
     @Get('all')
     @HttpCode(HttpStatus.OK) // 200
-    allItems(@Query('limit') limit: string, @Query('offset') offset: string) {
-        return this.itemService.allItems(parseInt(limit), parseInt(offset));
+    allItems(@Query('limit') limit: string, @Query('offset') offset: string, @GetUser() user: User) {
+        return this.itemService.allItems(parseInt(limit), parseInt(offset), user);
     }
 
     @Get(':id')
-    singleItem(@Param('id') id: string) {
-        return this.itemService.singleItem(id);
+    singleItem(@Param('id') id: string, @GetUser() user: User) {
+        return this.itemService.singleItem(id, user);
     }
 
 }

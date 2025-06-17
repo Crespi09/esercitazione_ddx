@@ -7,6 +7,10 @@ import { User } from "@prisma/client";
 export class FileService {
     constructor(private prisma: PrismaService) { }
 
+    // TODO - create an item
+    // TODO - create a file -> salvando il relativo path creato
+
+    
     saveFile(file: Express.Multer.File, dto: FileDto, user: User) {
         console.log('Saving file info:', {
             filename: file.filename,
@@ -23,6 +27,8 @@ export class FileService {
             user: user.id,
         };
     }
+
+    // TODO - per il get andare a prendere il path dall'id passato e trasportare quello che ho scritto nel controller
 
     // async uploadFile(dto: FileDto, user: User) {
 

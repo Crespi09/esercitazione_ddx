@@ -1,6 +1,7 @@
-import { FileService } from "./file.service";
-import { User } from "@prisma/client";
-import { FileDto } from "./dto/file.dto";
+import { FileService } from './file.service';
+import { User } from '@prisma/client';
+import { FileDto } from './dto/file.dto';
+import { Response } from 'express';
 export declare class FileController {
     private fileService;
     constructor(fileService: FileService);
@@ -9,4 +10,5 @@ export declare class FileController {
         filename: string;
         user: number;
     };
+    getFile(res: Response): void;
 }

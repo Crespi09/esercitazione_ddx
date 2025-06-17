@@ -19,7 +19,6 @@ const file_service_1 = require("./file.service");
 const decorator_1 = require("../auth/decorator");
 const file_dto_1 = require("./dto/file.dto");
 const platform_express_1 = require("@nestjs/platform-express");
-const path_1 = require("path");
 const fs_1 = require("fs");
 let FileController = class FileController {
     constructor(fileService) {
@@ -28,9 +27,11 @@ let FileController = class FileController {
     uploadFile(file, dto, user) {
         return this.fileService.saveFile(file, dto, user);
     }
-    getFile(res) {
-        const file = (0, fs_1.createReadStream)((0, path_1.join)(process.cwd(), 'uploads/file-1750083835469-112574999.webp'));
+    async getFile(id, res) {
+        const path = await this.fileService.getFileById(id);
+        const file = (0, fs_1.createReadStream)(path);
         file.pipe(res);
+        return file;
     }
 };
 exports.FileController = FileController;
@@ -45,11 +46,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FileController.prototype, "uploadFile", null);
 __decorate([
-    (0, common_1.Get)(''),
-    __param(0, (0, common_1.Res)()),
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], FileController.prototype, "getFile", null);
 exports.FileController = FileController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),

@@ -5,10 +5,28 @@ import { Response } from 'express';
 export declare class FileController {
     private fileService;
     constructor(fileService: FileService);
-    uploadFile(file: Express.Multer.File, dto: FileDto, user: User): {
+    uploadFile(file: Express.Multer.File, dto: FileDto, user: User): Promise<{
         message: string;
-        filename: string;
+        item: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            color: string | null;
+            parentId: number | null;
+            ownerId: number;
+        };
+        file: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            fileType: string;
+            storage: number;
+            fileName: string;
+            path: string;
+            itemId: number;
+        };
         user: number;
-    };
-    getFile(res: Response): void;
+    }>;
+    getFile(id: string, res: Response): Promise<import("fs").ReadStream>;
 }

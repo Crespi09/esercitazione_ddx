@@ -11,7 +11,7 @@ export class FileDto {
     fileType: string
 
     @IsNotEmpty()
-    storage: number
+    storage: string
 
     @IsOptional()
     @IsString()

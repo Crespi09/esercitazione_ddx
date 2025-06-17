@@ -5,6 +5,7 @@ import {
   FileTypeValidator,
   Get,
   MaxFileSizeValidator,
+  Param,
   ParseFilePipe,
   Post,
   Res,
@@ -37,10 +38,14 @@ export class FileController {
     return this.fileService.saveFile(file, dto, user);
   }
 
-  @Get('')
-  getFile(@Res() res: Response) {
-    const file = createReadStream(join(process.cwd(), 'uploads/file-1750083835469-112574999.webp'));
+  @Get(':id')
+  async getFile(@Param('id') id: string, @Res() res: Response) {
+    const path = await this.fileService.getFileById(id);
+
+    const file = createReadStream(path);
     file.pipe(res);
+
+    return file;
   }
 
 }

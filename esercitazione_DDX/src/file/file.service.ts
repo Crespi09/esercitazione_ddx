@@ -1,81 +1,72 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
-import { FileDto } from "./dto/file.dto";
-import { User } from "@prisma/client";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { FileDto } from './dto/file.dto';
+import { User } from '@prisma/client';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Injectable({})
 export class FileService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-    // TODO - create an item
-    // TODO - create a file -> salvando il relativo path creato
+  async saveFile(file: Express.Multer.File, dto: FileDto, user: User) {
+    try {
+      const itemObj = await this.prisma.item.create({
+        data: {
+          name: file.originalname,
+          ...(dto.parentId
+            ? {
+                parent: {
+                  connect: {
+                    id: parseInt(dto.parentId)
+                      ? parseInt(dto.parentId)
+                      : undefined,
+                  },
+                },
+              }
+            : {}),
+          owner: { connect: { id: user.id } },
 
-    
-    saveFile(file: Express.Multer.File, dto: FileDto, user: User) {
-        console.log('Saving file info:', {
-            filename: file.filename,
-            originalname: file.originalname,
-            path: file.path,
-            mimetype: file.mimetype,
-            dto,
-            user,
-        });
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
 
-        return {
-            message: 'File uploaded successfully',
-            filename: file.filename,
-            user: user.id,
-        };
+      const fileObj = await this.prisma.file.create({
+        data: {
+          fileType: file.mimetype,
+          fileName: file.originalname,
+          storage: file.size,
+          path: file.path,
+          item: {
+            connect: { id: itemObj.id },
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+      return {
+        message: 'File uploaded successfully',
+        item: itemObj,
+        file: fileObj,
+        user: user.id,
+      };
+    } catch (error) {
+      throw error;
     }
+  }
 
-    // TODO - per il get andare a prendere il path dall'id passato e trasportare quello che ho scritto nel controller
-
-    // async uploadFile(dto: FileDto, user: User) {
-
-    //     const path = `uploads/${user.id}/${dto.name}`;
-
-    //     // TODO - andare a creare un item correlato al file
-
-    //     const item = await this.prisma.item.create({
-    //         data: {
-    //             name: dto.name,
-    //             ...(dto.parentId
-    //                 ? {
-    //                     parent: {
-    //                         connect: {
-    //                             id: parseInt(dto.parentId)
-    //                                 ? parseInt(dto.parentId)
-    //                                 : undefined,
-    //                         },
-    //                     },
-    //                 }
-    //                 : {}),
-    //             owner: { connect: { id: user.id } },
-
-    //             createdAt: new Date(),
-    //             updatedAt: new Date(),
-    //         },
-    //     });
-
-    //     try {
-    //         const file = await this.prisma.file.create({
-    //             data: {
-    //                 fileType: dto.fileType,
-    //                 fileName: dto.name,
-    //                 storage: dto.storage,
-    //                 path: path,
-    //                 item: {
-    //                     connect: { id: item.id }
-    //                 },
-    //                 createdAt: new Date(),
-    //                 updatedAt: new Date(),
-    //             },
-    //         });
-    //         return file;
-    //     } catch (error) {
-    //         // Gestione degli errori specifici se necessario
-    //         throw error;
-    //     }
-
-    // }
+  async getFileById(id: string) {
+    try {
+      const file = await this.prisma.file.findUnique({
+        where: { id: parseInt(id) },
+      });
+      return file.path;
+    } catch (error) {
+      if (error) {
+        throw error;
+      }
+      throw new Error('File not Found');
+    }
+  }
 }

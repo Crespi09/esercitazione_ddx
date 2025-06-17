@@ -16,20 +16,64 @@ let FileService = class FileService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    saveFile(file, dto, user) {
-        console.log('Saving file info:', {
-            filename: file.filename,
-            originalname: file.originalname,
-            path: file.path,
-            mimetype: file.mimetype,
-            dto,
-            user,
-        });
-        return {
-            message: 'File uploaded successfully',
-            filename: file.filename,
-            user: user.id,
-        };
+    async saveFile(file, dto, user) {
+        try {
+            const itemObj = await this.prisma.item.create({
+                data: {
+                    name: file.originalname,
+                    ...(dto.parentId
+                        ? {
+                            parent: {
+                                connect: {
+                                    id: parseInt(dto.parentId)
+                                        ? parseInt(dto.parentId)
+                                        : undefined,
+                                },
+                            },
+                        }
+                        : {}),
+                    owner: { connect: { id: user.id } },
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            });
+            const fileObj = await this.prisma.file.create({
+                data: {
+                    fileType: file.mimetype,
+                    fileName: file.originalname,
+                    storage: file.size,
+                    path: file.path,
+                    item: {
+                        connect: { id: itemObj.id },
+                    },
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            });
+            return {
+                message: 'File uploaded successfully',
+                item: itemObj,
+                file: fileObj,
+                user: user.id,
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async getFileById(id) {
+        try {
+            const file = await this.prisma.file.findUnique({
+                where: { id: parseInt(id) },
+            });
+            return file.path;
+        }
+        catch (error) {
+            if (error) {
+                throw error;
+            }
+            throw new Error('File not Found');
+        }
     }
 };
 exports.FileService = FileService;

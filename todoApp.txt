@@ -21,13 +21,14 @@ BACKEND
 	+ @ API modifica file
 	+ @ API elimina file
 	---- ricerche basate su filtri ----
-	@ API get tutti i file
+	+ @ API get tutti i file
 	+ @ API get file singolo
 
 
 			SHARED
-	@ API share an item
-	@
+	@ API add share an item
+	@ API remove share
+	@ API edit share
 
 			ARCHIVIAZIONE
 	@ API get spazio archiviazione disponibile

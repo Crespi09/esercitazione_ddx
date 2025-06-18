@@ -9,6 +9,7 @@ import {
   ParseFilePipe,
   Post,
   Put,
+  Query,
   Res,
   UploadedFile,
   UseGuards,

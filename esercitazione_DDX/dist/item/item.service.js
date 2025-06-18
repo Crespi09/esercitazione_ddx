@@ -152,7 +152,50 @@ let ItemService = class ItemService {
                     }
                 },
             });
-            return items;
+            const itemFileIds = [];
+            const itemFolderIds = [];
+            await Promise.all(items.map(async (element) => {
+                const file = await this.prisma.file.findUnique({
+                    where: {
+                        itemId: element.id,
+                    },
+                });
+                if (file) {
+                    console.log('sono un file : ', element);
+                    console.log('con Id:', file.itemId);
+                    itemFileIds.push(file.itemId);
+                }
+                else {
+                    console.log('sono una cartella : ', element);
+                    console.log('con Id:', element.id);
+                    itemFolderIds.push(element.id);
+                }
+            }));
+            const itemsFolder = await this.prisma.item.findMany({
+                where: {
+                    id: {
+                        in: itemFolderIds,
+                    },
+                    owner: {
+                        is: {
+                            id: user.id,
+                        }
+                    }
+                },
+            });
+            console.log('itemFileIds', itemFileIds);
+            console.log('itemFolderIds', itemFolderIds);
+            const itemsFile = await this.prisma.file.findMany({
+                where: {
+                    itemId: {
+                        in: itemFileIds,
+                    },
+                },
+            });
+            return {
+                folders: itemsFolder,
+                files: itemsFile,
+            };
         }
         catch (error) {
             throw error;

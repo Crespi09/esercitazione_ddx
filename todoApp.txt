@@ -24,6 +24,11 @@ BACKEND
 	@ API get tutti i file
 	+ @ API get file singolo
 
+
+			SHARED
+	@ API share an item
+	@
+
 			ARCHIVIAZIONE
 	@ API get spazio archiviazione disponibile
 	@ API get spazio archiviazione totale ( ? )

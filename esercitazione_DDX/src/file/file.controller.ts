@@ -8,6 +8,7 @@ import {
   Param,
   ParseFilePipe,
   Post,
+  Put,
   Res,
   UploadedFile,
   UseGuards,
@@ -26,7 +27,7 @@ import { Response } from 'express';
 @UseGuards(JwtGuard)
 @Controller('file')
 export class FileController {
-  constructor(private fileService: FileService) {}
+  constructor(private fileService: FileService) { }
 
   @Post('')
   @UseInterceptors(FileInterceptor('file'))
@@ -46,6 +47,19 @@ export class FileController {
     file.pipe(res);
 
     return file;
+  }
+
+  // passo id del file
+  @Put(':id')
+  updateFile(
+    @Param('id') id: string, @Body() dto: FileDto, @GetUser() user: User,
+  ) {
+    return this.fileService.updateFile(id, dto, user);
+  }
+
+  @Delete(':id')
+  deleteFile(@Param('id') id: string, @GetUser() user: User) {
+    return this.fileService.deleteFile(id, user);
   }
 
 }

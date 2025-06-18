@@ -20,12 +20,37 @@ export declare class FileService {
             createdAt: Date;
             updatedAt: Date;
             fileType: string;
-            storage: number;
             fileName: string;
+            storage: number;
             path: string;
             itemId: number;
         };
         user: number;
     }>;
     getFileById(id: string): Promise<string>;
+    updateFile(id: string, dto: FileDto, user: User): Promise<{
+        message: string;
+        item: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            color: string | null;
+            parentId: number | null;
+            ownerId: number;
+        };
+        fileUpdated: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            fileType: string;
+            fileName: string;
+            storage: number;
+            path: string;
+            itemId: number;
+        };
+    }>;
+    deleteFile(id: string, user: User): Promise<{
+        message: string;
+    }>;
 }

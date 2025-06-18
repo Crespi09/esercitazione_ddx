@@ -1,0 +1,29 @@
+TODO -
+
+
+BACKEND
+			USER 
+	+ @ API login e registrazione con access token e refresh
+	+ @ API get user data
+	+ @ API update user data
+
+			CARTELLE
+	+ @ API creazione cartella
+	+ @ API modifica cartella
+	+ @ API elimina cartella
+	---- ricerche basate su filtri ----
+	+ @ API get tutte le cartelle
+	+ @ API get cartella singola
+
+
+			FILE
+	+ @ API creazione file
+	+ @ API modifica file
+	+ @ API elimina file
+	---- ricerche basate su filtri ----
+	@ API get tutti i file
+	+ @ API get file singolo
+
+			ARCHIVIAZIONE
+	@ API get spazio archiviazione disponibile
+	@ API get spazio archiviazione totale ( ? )

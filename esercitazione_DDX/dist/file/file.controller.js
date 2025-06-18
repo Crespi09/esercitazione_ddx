@@ -33,6 +33,12 @@ let FileController = class FileController {
         file.pipe(res);
         return file;
     }
+    updateFile(id, dto, user) {
+        return this.fileService.updateFile(id, dto, user);
+    }
+    deleteFile(id, user) {
+        return this.fileService.deleteFile(id, user);
+    }
 };
 exports.FileController = FileController;
 __decorate([
@@ -53,6 +59,23 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FileController.prototype, "getFile", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, file_dto_1.FileDto, Object]),
+    __metadata("design:returntype", void 0)
+], FileController.prototype, "updateFile", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], FileController.prototype, "deleteFile", null);
 exports.FileController = FileController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('file'),

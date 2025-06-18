@@ -21,12 +21,37 @@ export declare class FileController {
             createdAt: Date;
             updatedAt: Date;
             fileType: string;
-            storage: number;
             fileName: string;
+            storage: number;
             path: string;
             itemId: number;
         };
         user: number;
     }>;
     getFile(id: string, res: Response): Promise<import("fs").ReadStream>;
+    updateFile(id: string, dto: FileDto, user: User): Promise<{
+        message: string;
+        item: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            color: string | null;
+            parentId: number | null;
+            ownerId: number;
+        };
+        fileUpdated: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            fileType: string;
+            fileName: string;
+            storage: number;
+            path: string;
+            itemId: number;
+        };
+    }>;
+    deleteFile(id: string, user: User): Promise<{
+        message: string;
+    }>;
 }

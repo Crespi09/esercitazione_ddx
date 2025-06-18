@@ -75,6 +75,74 @@ let FileService = class FileService {
             throw new Error('File not Found');
         }
     }
+    async updateFile(id, dto, user) {
+        const parentId = parseInt(dto.parentId);
+        if (parentId) {
+            const parentExists = await this.prisma.item.findUnique({
+                where: { id: parentId },
+            });
+            if (!parentExists) {
+                throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
+            }
+            if (parentExists.ownerId !== user.id) {
+                throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
+            }
+        }
+        try {
+            const file = await this.prisma.file.findUnique({
+                where: { id: parseInt(id) }
+            });
+            if (!file) {
+                throw new common_1.NotFoundException('File not found');
+            }
+            const fileUpdated = await this.prisma.file.update({
+                where: { id: parseInt(id) },
+                data: {
+                    fileName: dto.name,
+                    updatedAt: new Date(),
+                }
+            });
+            const item = await this.prisma.item.update({
+                where: { id: file.itemId },
+                data: {
+                    ...(dto.name && { name: dto.name }),
+                    ...(parentId && {
+                        parent: { connect: { id: parentId } },
+                    }),
+                    updatedAt: new Date(),
+                },
+            });
+            return {
+                message: 'Item updated successfully',
+                item,
+                fileUpdated
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async deleteFile(id, user) {
+        try {
+            const file = await this.prisma.file.findUnique({
+                where: { id: parseInt(id) },
+            });
+            if (!file)
+                throw new Error('File not found');
+            await this.prisma.file.delete({
+                where: { id: parseInt(id) },
+            });
+            await this.prisma.item.delete({
+                where: { id: file.itemId, ownerId: user.id },
+            });
+            return {
+                message: 'File deleted successfully',
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 };
 exports.FileService = FileService;
 exports.FileService = FileService = __decorate([

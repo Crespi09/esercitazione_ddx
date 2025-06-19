@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ItemModule } from './item/item.module';
 import { FileModule } from './file/file.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { FileModule } from './file/file.module';
     AuthModule,
     UserModule,
     ItemModule,
-    FileModule
+    FileModule,
+    SharedModule
   ],
   controllers: [AppController],
   providers: [AppService],

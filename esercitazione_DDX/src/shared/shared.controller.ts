@@ -10,15 +10,6 @@ import { ShareDto } from "./dto/share.dto";
 export class SharedController {
     constructor(private sharedService: SharedService) { }
 
-    /*
-
-    + @ API add share an item
-	@ API remove share
-	@ API edit share
-    @ API get all shared items
-
-    */
-
     @Post('')
     addShareItem(@Body() dto: ShareDto, @GetUser() user : User){
         return this.sharedService.addShareItem(dto, user);
@@ -28,8 +19,5 @@ export class SharedController {
     removeShareItem(@Param('id') id : string, @GetUser() user : User){
         return this.sharedService.removeShareItem(id, user);
     }
-
-
-
 
 }

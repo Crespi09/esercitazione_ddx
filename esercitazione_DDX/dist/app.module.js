@@ -15,6 +15,7 @@ const auth_module_1 = require("./auth/auth.module");
 const user_module_1 = require("./user/user.module");
 const item_module_1 = require("./item/item.module");
 const file_module_1 = require("./file/file.module");
+const shared_module_1 = require("./shared/shared.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,7 +28,8 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             user_module_1.UserModule,
             item_module_1.ItemModule,
-            file_module_1.FileModule
+            file_module_1.FileModule,
+            shared_module_1.SharedModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

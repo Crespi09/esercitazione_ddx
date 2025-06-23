@@ -26,9 +26,10 @@ BACKEND
 
 
 			SHARED
-	@ API add share an item
-	@ API remove share
-	@ API edit share
+	+ @ API add share an item
+	+ @ API remove share
+	@ API get shared files e folder
+
 
 			ARCHIVIAZIONE
 	@ API get spazio archiviazione disponibile

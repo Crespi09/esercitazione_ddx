@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -62,7 +62,28 @@ export class SharedService {
 
   }
 
-  async removeShareItem(itemId : string , user : User){
+  async removeShareItem(sharedId : string , user : User){
+    const shared = await this.prisma.shared.findUnique({
+      where : { id: parseInt(sharedId) }
+    });
+
+    if(!shared) {
+      throw new NotFoundException('Condivisione non trovata');
+    }
+
+    const item = await this.prisma.item.findUnique({
+      where: { id: shared.itemId }
+    });
+
+    if (shared.sharedWithId !== user.id && item.ownerId !== user.id) {
+      throw new ForbiddenException('Non hai i permessi per rimuovere questa condivisione');
+    }
+    
+    await this.prisma.shared.delete({
+      where: { id: parseInt(sharedId) }
+    });
+
+    return HttpStatus.NO_CONTENT;
 
   }
 

@@ -11,13 +11,24 @@ export class SharedController {
     constructor(private sharedService: SharedService) { }
 
     @Post('')
-    addShareItem(@Body() dto: ShareDto, @GetUser() user : User){
+    addShareItem(@Body() dto: ShareDto, @GetUser() user: User) {
         return this.sharedService.addShareItem(dto, user);
     }
 
     @Delete(':id')
-    removeShareItem(@Param('id') id : string, @GetUser() user : User){
+    removeShareItem(@Param('id') id: string, @GetUser() user: User) {
         return this.sharedService.removeShareItem(id, user);
+    }
+
+    @Get('all')
+    @HttpCode(HttpStatus.OK) // 200
+    allItems(@Query('limit') limit: string, @Query('offset') offset: string, @GetUser() user: User) {
+        return this.sharedService.allItemsShared(parseInt(limit), parseInt(offset), user);
+    }
+
+    @Get(':id')
+    singleItem(@Param('id') id: string, @GetUser() user: User) {
+        return this.sharedService.singleItemShared(id, user);
     }
 
 }

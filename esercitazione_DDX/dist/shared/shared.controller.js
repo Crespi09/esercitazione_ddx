@@ -28,6 +28,12 @@ let SharedController = class SharedController {
     removeShareItem(id, user) {
         return this.sharedService.removeShareItem(id, user);
     }
+    allItems(limit, offset, user) {
+        return this.sharedService.allItemsShared(parseInt(limit), parseInt(offset), user);
+    }
+    singleItem(id, user) {
+        return this.sharedService.singleItemShared(id, user);
+    }
 };
 exports.SharedController = SharedController;
 __decorate([
@@ -46,6 +52,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], SharedController.prototype, "removeShareItem", null);
+__decorate([
+    (0, common_1.Get)('all'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Query)('limit')),
+    __param(1, (0, common_1.Query)('offset')),
+    __param(2, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], SharedController.prototype, "allItems", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], SharedController.prototype, "singleItem", null);
 exports.SharedController = SharedController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('shared'),

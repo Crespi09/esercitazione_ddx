@@ -47,7 +47,6 @@ let SharedService = class SharedService {
                     updatedAt: new Date(),
                 },
             });
-            return share;
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
@@ -75,6 +74,103 @@ let SharedService = class SharedService {
             where: { id: parseInt(sharedId) }
         });
         return common_1.HttpStatus.NO_CONTENT;
+    }
+    async allItemsShared(limit, offset, user) {
+        if (limit === undefined || limit === null || offset === undefined || offset === null) {
+            throw new common_1.ForbiddenException('Limit and offset are required');
+        }
+        if (limit <= 0) {
+            throw new common_1.ForbiddenException('Limit must be greater than 0');
+        }
+        if (offset < 0) {
+            throw new common_1.ForbiddenException('Offset must be greater than or equal to 0');
+        }
+        try {
+            const itemsShared = await this.prisma.shared.findMany({
+                take: limit,
+                skip: offset,
+                orderBy: { createdAt: 'desc' },
+                where: {
+                    sharedWithId: user.id,
+                },
+                include: {
+                    item: true,
+                },
+            });
+            console.log('itemsShared', itemsShared);
+            const itemFileIds = [];
+            const itemFolderIds = [];
+            await Promise.all(itemsShared.map(async (element) => {
+                const file = await this.prisma.file.findUnique({
+                    where: {
+                        itemId: element.itemId,
+                    },
+                });
+                if (file) {
+                    console.log('sono un file : ', element);
+                    console.log('con Id:', file.itemId);
+                    itemFileIds.push(file.itemId);
+                }
+                else {
+                    console.log('sono una cartella : ', element);
+                    console.log('con Id:', element.id);
+                    itemFolderIds.push(element.id);
+                }
+            }));
+            console.log('---------------------------------------');
+            console.log('itemFileIds', itemFileIds);
+            console.log('itemFolderIds', itemFolderIds);
+            console.log('---------------------------------------');
+            const itemsFolder = await this.prisma.item.findMany({
+                where: {
+                    id: {
+                        in: itemFolderIds,
+                    }
+                },
+            });
+            console.log('+++++++++++++++++++++++++++++++++++');
+            console.log('itemsFolder', itemsFolder);
+            console.log('+++++++++++++++++++++++++++++++++++');
+            const itemsFile = await this.prisma.file.findMany({
+                where: {
+                    itemId: {
+                        in: itemFileIds,
+                    },
+                },
+            });
+            return {
+                folders: itemsFolder,
+                files: itemsFile,
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async singleItemShared(id, user) {
+        if (!id) {
+            throw new common_1.ForbiddenException('Id is required');
+        }
+        try {
+            const item = await this.prisma.shared.findUnique({
+                where: {
+                    id: parseInt(id), sharedWith: {
+                        is: {
+                            id: user.id,
+                        }
+                    }
+                },
+            });
+            return item;
+        }
+        catch (error) {
+            if (error instanceof library_1.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') {
+                    throw new common_1.ForbiddenException('Item not found');
+                }
+            }
+            throw error;
+        }
     }
 };
 exports.SharedService = SharedService;

@@ -18,9 +18,8 @@ let CustomExceptionFilter = class CustomExceptionFilter {
         response
             .status(status)
             .json({
-            statusCode: status,
+            status: status,
             message: message,
-            response: response,
             timestamp: new Date().toISOString(),
             path: request.url,
         });

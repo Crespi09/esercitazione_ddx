@@ -117,10 +117,6 @@ let SharedService = class SharedService {
                     itemFolderIds.push(element.id);
                 }
             }));
-            console.log('---------------------------------------');
-            console.log('itemFileIds', itemFileIds);
-            console.log('itemFolderIds', itemFolderIds);
-            console.log('---------------------------------------');
             const itemsFolder = await this.prisma.item.findMany({
                 where: {
                     id: {
@@ -128,9 +124,6 @@ let SharedService = class SharedService {
                     }
                 },
             });
-            console.log('+++++++++++++++++++++++++++++++++++');
-            console.log('itemsFolder', itemsFolder);
-            console.log('+++++++++++++++++++++++++++++++++++');
             const itemsFile = await this.prisma.file.findMany({
                 where: {
                     itemId: {

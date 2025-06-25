@@ -16,13 +16,16 @@ services:
       - "3306:3306"
   nestjs:
     build: .
+    container_name: nestjs
     depends_on:
-      - db
+      - mysql
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    command: bash -c "npx prisma migrate deploy && npm run start:prod"
+      - '3000:3000'
+    environment:
+      DATABASE_URL: mysql://dev:dev@mysql:3306/ddx
+      JWT_SECRET: access-key
+      JWT_REFRESH_SECRET: refresh-key
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:prod"
 
 volumes:
   db_data:

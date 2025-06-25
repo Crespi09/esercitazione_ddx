@@ -13,7 +13,9 @@ services:
     ports:
       - "3306:3306"
   nestjs:
-    build: .
+    build:
+      context: .
+      dockerfile: DockerFile
     container_name: nestjs
     depends_on:
       - db

@@ -22,7 +22,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      DATABASE_URL: mysql://dev:dev@mysql:3306/ddx
+      DATABASE_URL: mysql://nestuser:nestpass@db:3306/ddx
       JWT_SECRET: access-key
       JWT_REFRESH_SECRET: refresh-key
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:prod"

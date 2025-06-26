@@ -12,20 +12,26 @@ services:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      
   nestjs:
     build:
       context: .
       dockerfile: DockerFile
     container_name: nestjs
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - '3000:3000'
     environment:
       DATABASE_URL: mysql://nestuser:nestpass@db:3306/ddx
       JWT_SECRET: access-key
       JWT_REFRESH_SECRET: refresh-key
-    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:prod"
+    command: sh -c "sleep 10 && npx prisma db push --force-reset && npx prisma generate && npm run start:prod"
 
 volumes:
   db_data:

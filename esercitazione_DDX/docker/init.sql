@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `file`
+-- Struttura della tabella `File`
 --
 
-CREATE TABLE `file` (
+CREATE TABLE `File` (
   `id` int(11) NOT NULL,
   `fileType` varchar(191) NOT NULL,
   `fileName` varchar(191) NOT NULL,
@@ -39,19 +39,19 @@ CREATE TABLE `file` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dump dei dati per la tabella `file`
+-- Dump dei dati per la tabella `File`
 --
 
-INSERT INTO `file` (`id`, `fileType`, `fileName`, `storage`, `path`, `createdAt`, `updatedAt`, `itemId`) VALUES
+INSERT INTO `File` (`id`, `fileType`, `fileName`, `storage`, `path`, `createdAt`, `updatedAt`, `itemId`) VALUES
 (2, 'image/png', 'spidamana.png', 48983, 'uploads\\file-1750252218047-392608884.png', '2025-06-18 13:10:18.064', '2025-06-18 13:10:18.064', 8);
 
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `item`
+-- Struttura della tabella `Item`
 --
 
-CREATE TABLE `item` (
+CREATE TABLE `Item` (
   `id` int(11) NOT NULL,
   `name` varchar(191) NOT NULL,
   `color` varchar(191) DEFAULT NULL,
@@ -62,10 +62,10 @@ CREATE TABLE `item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dump dei dati per la tabella `item`
+-- Dump dei dati per la tabella `Item`
 --
 
-INSERT INTO `item` (`id`, `name`, `color`, `createdAt`, `updatedAt`, `ownerId`, `parentId`) VALUES
+INSERT INTO `Item` (`id`, `name`, `color`, `createdAt`, `updatedAt`, `ownerId`, `parentId`) VALUES
 (1, 'folderUpdatedName', '#f59673', '2025-06-08 10:15:53.741', '2025-06-08 10:29:19.995', 30, NULL),
 (5, 'folder_test', '#ffffff', '2025-06-08 10:23:12.199', '2025-06-08 10:23:12.199', 30, 1),
 (6, 'folder_test', '#ffffff', '2025-06-16 10:26:39.554', '2025-06-16 10:26:39.554', 33, NULL),
@@ -74,10 +74,10 @@ INSERT INTO `item` (`id`, `name`, `color`, `createdAt`, `updatedAt`, `ownerId`, 
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `shared`
+-- Struttura della tabella `Shared`
 --
 
-CREATE TABLE `shared` (
+CREATE TABLE `Shared` (
   `id` int(11) NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL,
@@ -86,20 +86,20 @@ CREATE TABLE `shared` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dump dei dati per la tabella `shared`
+-- Dump dei dati per la tabella `Shared`
 --
 
-INSERT INTO `shared` (`id`, `createdAt`, `updatedAt`, `itemId`, `sharedWithId`) VALUES
+INSERT INTO `Shared` (`id`, `createdAt`, `updatedAt`, `itemId`, `sharedWithId`) VALUES
 (2, '2025-06-23 09:52:43.272', '2025-06-23 09:52:43.272', 8, 30),
 (6, '2025-06-23 10:49:05.679', '2025-06-23 10:49:05.679', 6, 30);
 
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `user`
+-- Struttura della tabella `User`
 --
 
-CREATE TABLE `user` (
+CREATE TABLE `User` (
   `id` int(11) NOT NULL,
   `username` varchar(191) NOT NULL,
   `hash` varchar(191) NOT NULL,
@@ -109,10 +109,10 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dump dei dati per la tabella `user`
+-- Dump dei dati per la tabella `User`
 --
 
-INSERT INTO `user` (`id`, `username`, `hash`, `refreshToken`, `createdAt`, `updatedAt`) VALUES
+INSERT INTO `User` (`id`, `username`, `hash`, `refreshToken`, `createdAt`, `updatedAt`) VALUES
 (30, 'gianfranco', '$argon2id$v=19$m=65536,t=3,p=4$6680liCBx80VzKDn9TtELg$fwOGKBtHFYT7FTPbWj3QMcvv4oC8RFI+NVjAOwHvqFA', '$argon2id$v=19$m=65536,t=3,p=4$ZTzSAVUD3eDxUvYJjgibcg$gZlp2ueM0pzw5hgoE8qbdKV1WnYbDeaarkii4VrwqSM', '2024-11-18 17:52:13.170', '2025-06-23 10:47:51.603'),
 (33, 'pierino', '$argon2id$v=19$m=65536,t=3,p=4$wdj3R8nkMxliG8IYKNgKrQ$3sDwAdiIAW4z/sEv1pPrCKk85/WaWccwy2vf1MiwaN0', '$argon2id$v=19$m=65536,t=3,p=4$AoWLzm3TcwbZOBYzKfGoag$Ccz7QaeucBaeKumcC27CQgmeeRkhQl5xAjOC2b7KOQM', '2024-11-19 22:11:09.537', '2025-06-25 11:51:31.172');
 
@@ -151,32 +151,32 @@ INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_na
 --
 
 --
--- Indici per le tabelle `file`
+-- Indici per le tabelle `File`
 --
-ALTER TABLE `file`
+ALTER TABLE `File`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `File_itemId_key` (`itemId`);
 
 --
--- Indici per le tabelle `item`
+-- Indici per le tabelle `Item`
 --
-ALTER TABLE `item`
+ALTER TABLE `Item`
   ADD PRIMARY KEY (`id`),
   ADD KEY `Item_ownerId_fkey` (`ownerId`),
   ADD KEY `Item_parentId_fkey` (`parentId`);
 
 --
--- Indici per le tabelle `shared`
+-- Indici per le tabelle `Shared`
 --
-ALTER TABLE `shared`
+ALTER TABLE `Shared`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `Shared_itemId_sharedWithId_key` (`itemId`,`sharedWithId`),
   ADD KEY `Shared_sharedWithId_fkey` (`sharedWithId`);
 
 --
--- Indici per le tabelle `user`
+-- Indici per le tabelle `User`
 --
-ALTER TABLE `user`
+ALTER TABLE `User`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `User_username_key` (`username`);
 
@@ -191,27 +191,27 @@ ALTER TABLE `_prisma_migrations`
 --
 
 --
--- AUTO_INCREMENT per la tabella `file`
+-- AUTO_INCREMENT per la tabella `File`
 --
-ALTER TABLE `file`
+ALTER TABLE `File`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT per la tabella `item`
+-- AUTO_INCREMENT per la tabella `Item`
 --
-ALTER TABLE `item`
+ALTER TABLE `Item`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT per la tabella `shared`
+-- AUTO_INCREMENT per la tabella `Shared`
 --
-ALTER TABLE `shared`
+ALTER TABLE `Shared`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT per la tabella `user`
+-- AUTO_INCREMENT per la tabella `User`
 --
-ALTER TABLE `user`
+ALTER TABLE `User`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
@@ -219,24 +219,24 @@ ALTER TABLE `user`
 --
 
 --
--- Limiti per la tabella `file`
+-- Limiti per la tabella `File`
 --
-ALTER TABLE `file`
-  ADD CONSTRAINT `File_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `File`
+  ADD CONSTRAINT `File_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limiti per la tabella `item`
+-- Limiti per la tabella `Item`
 --
-ALTER TABLE `item`
-  ADD CONSTRAINT `Item_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `Item_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Item`
+  ADD CONSTRAINT `Item_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `User` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `Item_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `Item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limiti per la tabella `shared`
+-- Limiti per la tabella `Shared`
 --
-ALTER TABLE `shared`
-  ADD CONSTRAINT `Shared_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `Shared_sharedWithId_fkey` FOREIGN KEY (`sharedWithId`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Shared`
+  ADD CONSTRAINT `Shared_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `Shared_sharedWithId_fkey` FOREIGN KEY (`sharedWithId`) REFERENCES `User` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

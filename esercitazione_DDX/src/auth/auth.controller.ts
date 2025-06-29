@@ -27,6 +27,7 @@ export class AuthController {
 
     @Get('/test')
     testAPI() {
+        console.log("la chiamata API FUNZIONAAAAA");
         return 'la chiamata API FUNZIONAAAAA';
     }
 }

@@ -46,6 +46,28 @@ let UserService = class UserService {
             },
         });
     }
+    async getItemsCount(userId) {
+        await this.findUserById(userId);
+        const totalItems = await this.prisma.item.count({
+            where: {
+                ownerId: userId,
+            }
+        });
+        const nFiles = await this.prisma.item.count({
+            where: {
+                ownerId: userId,
+                file: {
+                    isNot: null
+                }
+            }
+        });
+        const nFolder = totalItems - nFiles;
+        return {
+            totalItems,
+            nFolder,
+            nFiles
+        };
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

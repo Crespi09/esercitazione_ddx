@@ -2,15 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  /**
-   * Trova un utente in base all'ID
-   */
-  async findUserById(userId: number): Promise<User> {
+  async findUserById(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -24,9 +22,6 @@ export class UserService {
     return user;
   }
 
-  /**
-   * Aggiorna i dati dell'utente
-   */
   async updateUser(userId: number, dto: UpdateUserDto): Promise<User> {
     // Verifica se l'utente esiste
     await this.findUserById(userId);
@@ -42,9 +37,6 @@ export class UserService {
     });
   }
 
-  /**
-   * Elimina un utente e tutte le sue relazioni a cascata
-   */
   async deleteUser(userId: number): Promise<void> {
     await this.findUserById(userId);
 
@@ -53,6 +45,34 @@ export class UserService {
         id: userId,
       },
     });
+  }
+
+  async getItemsCount(userId: number): Promise<JsonValue> {
+
+    await this.findUserById(userId);
+
+    const totalItems = await this.prisma.item.count({
+      where: {
+        ownerId: userId,
+      }
+    });
+
+    const nFiles = await this.prisma.item.count({
+      where: {
+        ownerId: userId,
+        file: {
+          isNot: null
+        }
+      }
+    })
+
+    const nFolder = totalItems - nFiles;
+
+    return {
+      totalItems,
+      nFolder,
+      nFiles
+    }
   }
 
 }

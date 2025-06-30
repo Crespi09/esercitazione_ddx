@@ -14,8 +14,8 @@ export declare class SharedController {
             updatedAt: Date;
             name: string;
             color: string | null;
-            parentId: number | null;
             ownerId: number;
+            parentId: number | null;
         }[];
         files: {
             id: number;

@@ -12,8 +12,8 @@ export declare class ItemService {
         updatedAt: Date;
         name: string;
         color: string | null;
-        parentId: number | null;
         ownerId: number;
+        parentId: number | null;
     }>;
     deleteItem(id: string, user: User): Promise<{
         id: number;
@@ -21,8 +21,8 @@ export declare class ItemService {
         updatedAt: Date;
         name: string;
         color: string | null;
-        parentId: number | null;
         ownerId: number;
+        parentId: number | null;
     }>;
     allItems(limit: number, offset: number, user: User): Promise<{
         folders: {
@@ -31,8 +31,8 @@ export declare class ItemService {
             updatedAt: Date;
             name: string;
             color: string | null;
-            parentId: number | null;
             ownerId: number;
+            parentId: number | null;
         }[];
         files: {
             id: number;
@@ -51,7 +51,7 @@ export declare class ItemService {
         updatedAt: Date;
         name: string;
         color: string | null;
-        parentId: number | null;
         ownerId: number;
+        parentId: number | null;
     }>;
 }

@@ -12,8 +12,8 @@ export declare class FileService {
             updatedAt: Date;
             name: string;
             color: string | null;
-            parentId: number | null;
             ownerId: number;
+            parentId: number | null;
         };
         file: {
             id: number;
@@ -36,8 +36,8 @@ export declare class FileService {
             updatedAt: Date;
             name: string;
             color: string | null;
-            parentId: number | null;
             ownerId: number;
+            parentId: number | null;
         };
         fileUpdated: {
             id: number;

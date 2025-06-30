@@ -16,9 +16,16 @@ exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const decorator_1 = require("../auth/decorator");
 const guard_1 = require("../auth/guard");
+const user_service_1 = require("./user.service");
 let UserController = class UserController {
+    constructor(userService) {
+        this.userService = userService;
+    }
     getMe(user) {
         return user;
+    }
+    async getUserItemsStats(user) {
+        return await this.userService.getItemsCount(user.id);
     }
     updateUser(user) {
     }
@@ -32,6 +39,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getMe", null);
 __decorate([
+    (0, common_1.Get)('items-stats'),
+    __param(0, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getUserItemsStats", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),
@@ -40,6 +54,7 @@ __decorate([
 ], UserController.prototype, "updateUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
-    (0, common_1.Controller)('users')
+    (0, common_1.Controller)('users'),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

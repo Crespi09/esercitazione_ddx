@@ -14,4 +14,5 @@ export declare class AuthController {
     updateJWT(dto: TokenDto): Promise<{
         access_token: string;
     }>;
+    testAPI(): string;
 }

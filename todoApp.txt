@@ -33,5 +33,11 @@ BACKEND
 
 
 			ARCHIVIAZIONE
-	- @ API get spazio archiviazione disponibile
+	- @ API get spazio archiviazione disponibile  ( non so se contare anche i file condivisi )
 	@ API get spazio archiviazione totale ( ? )
+
+
+
+
+	chiamata /users/me
+		-> aggiungere n_files e n_folder dell'utente

@@ -6,11 +6,12 @@ const common_1 = require("@nestjs/common");
 const custom_exception_filter_1 = require("./common/filters/custom-exception.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.enableCors();
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true
     }));
     app.useGlobalFilters(new custom_exception_filter_1.CustomExceptionFilter());
-    await app.listen(3333);
+    await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

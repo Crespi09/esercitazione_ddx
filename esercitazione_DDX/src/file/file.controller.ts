@@ -42,9 +42,11 @@ export class FileController {
 
   @Get(':id')
   async getFile(@Param('id') id: string, @Res() res: Response) {
-    const path = await this.fileService.getFileById(id);
+    const fileData = await this.fileService.getFileById(id);
 
-    const file = createReadStream(path);
+    res.setHeader('Content-Type', fileData.fileType);
+
+    const file = createReadStream(fileData.path);
     file.pipe(res);
 
     return file;

@@ -11,7 +11,7 @@ export class ItemService {
 
   async createItem(dto: ItemDto, user: User) {
     try {
-      if (dto.parentId) {
+      if (dto.parentId != null && dto.parentId !== '') {
         const parentId = parseInt(dto.parentId);
         if (isNaN(parentId)) {
           throw new ForbiddenException(
@@ -253,18 +253,40 @@ export class ItemService {
     if (!id) {
       throw new ForbiddenException('Id is required');
     }
-
+    
     try {
       const item = await this.prisma.item.findUnique({
         where: {
-          id: parseInt(id), owner: {
-            is: {
-              id: user.id,
-            }
-          }
+          id: parseInt(id),
+          ownerId: user.id
         },
       });
-      return item;
+      const itemSons = await this.prisma.item.findMany({
+        where: {
+          parentId: parseInt(id),
+          ownerId: user.id,
+        },
+      });
+
+      const childrenFile = await this.prisma.file.findMany({
+        where: {
+          itemId: {
+            in: itemSons.map((son) => son.id),
+          },
+        },
+      });
+
+      const childrenFolder = itemSons.filter(son => !childrenFile.some(file => file.itemId === son.id));
+
+      return {
+        item,
+        children: {
+          files: childrenFile,
+          folders: childrenFolder,
+        },
+      };
+
+
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {

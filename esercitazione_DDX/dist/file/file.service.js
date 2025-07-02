@@ -66,7 +66,7 @@ let FileService = class FileService {
             const file = await this.prisma.file.findUnique({
                 where: { id: parseInt(id) },
             });
-            return file.path;
+            return file;
         }
         catch (error) {
             if (error) {

@@ -27,7 +27,16 @@ export declare class FileService {
         };
         user: number;
     }>;
-    getFileById(id: string): Promise<string>;
+    getFileById(id: string): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fileType: string;
+        fileName: string;
+        storage: number;
+        path: string;
+        itemId: number;
+    }>;
     updateFile(id: string, dto: FileDto, user: User): Promise<{
         message: string;
         item: {

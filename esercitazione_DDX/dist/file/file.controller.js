@@ -28,8 +28,9 @@ let FileController = class FileController {
         return this.fileService.saveFile(file, dto, user);
     }
     async getFile(id, res) {
-        const path = await this.fileService.getFileById(id);
-        const file = (0, fs_1.createReadStream)(path);
+        const fileData = await this.fileService.getFileById(id);
+        res.setHeader('Content-Type', fileData.fileType);
+        const file = (0, fs_1.createReadStream)(fileData.path);
         file.pipe(res);
         return file;
     }

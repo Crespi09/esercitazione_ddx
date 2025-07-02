@@ -46,12 +46,35 @@ export declare class ItemService {
         }[];
     }>;
     singleItem(id: string, user: User): Promise<{
-        id: number;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        color: string | null;
-        ownerId: number;
-        parentId: number | null;
+        item: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            color: string | null;
+            ownerId: number;
+            parentId: number | null;
+        };
+        sons: {
+            files: {
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                fileType: string;
+                fileName: string;
+                storage: number;
+                path: string;
+                itemId: number;
+            }[];
+            folders: {
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                color: string | null;
+                ownerId: number;
+                parentId: number | null;
+            }[];
+        };
     }>;
 }

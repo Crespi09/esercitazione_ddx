@@ -208,14 +208,31 @@ let ItemService = class ItemService {
         try {
             const item = await this.prisma.item.findUnique({
                 where: {
-                    id: parseInt(id), owner: {
-                        is: {
-                            id: user.id,
-                        }
-                    }
+                    id: parseInt(id),
+                    ownerId: user.id
                 },
             });
-            return item;
+            const itemSons = await this.prisma.item.findMany({
+                where: {
+                    parentId: parseInt(id),
+                    ownerId: user.id,
+                },
+            });
+            const fileSons = await this.prisma.file.findMany({
+                where: {
+                    itemId: {
+                        in: itemSons.map((son) => son.id),
+                    },
+                },
+            });
+            const folderSons = itemSons.filter(son => !fileSons.some(file => file.itemId === son.id));
+            return {
+                item,
+                sons: {
+                    files: fileSons,
+                    folders: folderSons,
+                },
+            };
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {

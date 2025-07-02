@@ -34,6 +34,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             id: payload.sub,
             email: payload.email,
             username: user.username,
+            created_at: payload.createdAt
         };
     }
 };
@@ -41,6 +42,6 @@ exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService,
-        prisma_service_1.PrismaService])
+    prisma_service_1.PrismaService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map

@@ -189,7 +189,8 @@ export class ItemService {
             is: {
               id: user.id,
             }
-          }
+          },
+          parentId: null
         },
       });
 
@@ -253,7 +254,7 @@ export class ItemService {
     if (!id) {
       throw new ForbiddenException('Id is required');
     }
-    
+
     try {
       const item = await this.prisma.item.findUnique({
         where: {
@@ -277,6 +278,11 @@ export class ItemService {
       });
 
       const childrenFolder = itemSons.filter(son => !childrenFile.some(file => file.itemId === son.id));
+
+      console.log(item,
+        childrenFile,
+        childrenFolder,
+      );
 
       return {
         item,

@@ -68,31 +68,36 @@ export class ItemService {
   }
 
   async updateItem(id: string, dto: UpdateItemDto, user: User) {
-    const parentId = parseInt(dto.parentId);
 
-    if (!id) {
-      throw new ForbiddenException('Id is required');
+
+    if (dto.parentId != null && dto.parentId !== '') {
+
+      const parentId = parseInt(dto.parentId);
+
+      if (!id) {
+        throw new ForbiddenException('Id is required');
+      }
+
+      if (!dto.name && !dto.color && !parentId) {
+        throw new ForbiddenException('Name, color or parentId are required');
+      }
+
+      const parentExists = await this.prisma.item.findUnique({
+        where: { id: parentId },
+      });
+
+      if (!parentExists) {
+        throw new NotFoundException(`Parent con ID ${parentId} non trovato`);
+      }
+
+      // Verifica che l'utente sia proprietario del parent
+      if (parentExists.ownerId !== user.id) {
+        throw new ForbiddenException(
+          'Non hai i permessi per utilizzare questo parent',
+        );
+      }
+
     }
-
-    if (!dto.name && !dto.color && !parentId) {
-      throw new ForbiddenException('Name, color or parentId are required');
-    }
-
-    const parentExists = await this.prisma.item.findUnique({
-      where: { id: parentId },
-    });
-
-    if (!parentExists) {
-      throw new NotFoundException(`Parent con ID ${parentId} non trovato`);
-    }
-
-    // Verifica che l'utente sia proprietario del parent
-    if (parentExists.ownerId !== user.id) {
-      throw new ForbiddenException(
-        'Non hai i permessi per utilizzare questo parent',
-      );
-    }
-
 
     try {
       const item = await this.prisma.item.update({
@@ -100,9 +105,17 @@ export class ItemService {
         data: {
           ...(dto.name && { name: dto.name }),
           ...(dto.color && { color: dto.color }),
-          ...(parentId && {
-            parent: { connect: { id: parentId } },
-          }),
+          ...(dto.parentId
+            ? {
+              parent: {
+                connect: {
+                  id: parseInt(dto.parentId)
+                    ? parseInt(dto.parentId)
+                    : undefined,
+                },
+              },
+            }
+            : {}),
           updatedAt: new Date(),
         },
       });

@@ -55,7 +55,7 @@ export declare class ItemController {
             ownerId: number;
             parentId: number | null;
         };
-        sons: {
+        children: {
             files: {
                 id: number;
                 createdAt: Date;

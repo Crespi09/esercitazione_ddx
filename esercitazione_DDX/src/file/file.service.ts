@@ -11,7 +11,7 @@ import { join } from 'path';
 
 @Injectable({})
 export class FileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async saveFile(file: Express.Multer.File, dto: FileDto, user: User) {
     try {
@@ -44,14 +44,14 @@ export class FileService {
           name: file.originalname,
           ...(dto.parentId
             ? {
-                parent: {
-                  connect: {
-                    id: parseInt(dto.parentId)
-                      ? parseInt(dto.parentId)
-                      : undefined,
-                  },
+              parent: {
+                connect: {
+                  id: parseInt(dto.parentId)
+                    ? parseInt(dto.parentId)
+                    : undefined,
                 },
-              }
+              },
+            }
             : {}),
           owner: { connect: { id: user.id } },
 
@@ -96,6 +96,33 @@ export class FileService {
       }
       throw new Error('File not Found');
     }
+  }
+
+  async getFilesByIds(fileIds: string[], user: User) {
+
+    if (fileIds.length > 0) {
+      const numericIds = fileIds.map(id => Number(id));
+      try {
+        const files = await this.prisma.file.findMany({
+          where: {
+            id: { in: numericIds },
+            item: {
+              ownerId: user.id,
+            },
+          },
+        });
+
+        if (!files || files.length === 0) {
+          throw new NotFoundException('Nessun file trovato per gli ID forniti');
+        }
+        return files;
+
+      } catch (error) {
+        throw error;
+      }
+
+    }
+
   }
 
   async updateFile(id: string, dto: FileDto, user: User) {

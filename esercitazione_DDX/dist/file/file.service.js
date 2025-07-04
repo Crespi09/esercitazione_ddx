@@ -18,6 +18,21 @@ let FileService = class FileService {
     }
     async saveFile(file, dto, user) {
         try {
+            if (dto.parentId != null && dto.parentId !== '') {
+                const parentId = parseInt(dto.parentId);
+                if (isNaN(parentId)) {
+                    throw new common_1.ForbiddenException('Parent ID deve essere un numero valido');
+                }
+                const parentExists = await this.prisma.item.findUnique({
+                    where: { id: parentId },
+                });
+                if (!parentExists) {
+                    throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
+                }
+                if (parentExists.ownerId !== user.id) {
+                    throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
+                }
+            }
             const itemObj = await this.prisma.item.create({
                 data: {
                     name: file.originalname,
@@ -90,7 +105,7 @@ let FileService = class FileService {
         }
         try {
             const file = await this.prisma.file.findUnique({
-                where: { id: parseInt(id) }
+                where: { id: parseInt(id) },
             });
             if (!file) {
                 throw new common_1.NotFoundException('File not found');
@@ -100,7 +115,7 @@ let FileService = class FileService {
                 data: {
                     fileName: dto.name,
                     updatedAt: new Date(),
-                }
+                },
             });
             const item = await this.prisma.item.update({
                 where: { id: file.itemId },
@@ -115,7 +130,7 @@ let FileService = class FileService {
             return {
                 message: 'Item updated successfully',
                 item,
-                fileUpdated
+                fileUpdated,
             };
         }
         catch (error) {

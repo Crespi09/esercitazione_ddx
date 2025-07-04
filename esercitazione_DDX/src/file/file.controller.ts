@@ -24,6 +24,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
+import { get } from 'http';
 
 @UseGuards(JwtGuard)
 @Controller('file')
@@ -38,6 +39,12 @@ export class FileController {
     @GetUser() user: User,
   ) {
     return this.fileService.saveFile(file, dto, user);
+  }
+
+  @Get('')
+  async getFilesByIds(@Query('ids') ids: string, @GetUser() user: User) {
+    const fileIds = ids.split(',').map(id => id.trim());
+    return this.fileService.getFilesByIds(fileIds, user);
   }
 
   @Get(':id')

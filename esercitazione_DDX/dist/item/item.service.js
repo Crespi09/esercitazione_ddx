@@ -19,7 +19,7 @@ let ItemService = class ItemService {
     }
     async createItem(dto, user) {
         try {
-            if (dto.parentId) {
+            if (dto.parentId != null && dto.parentId !== '') {
                 const parentId = parseInt(dto.parentId);
                 if (isNaN(parentId)) {
                     throw new common_1.ForbiddenException('Parent ID deve essere un numero valido');
@@ -65,21 +65,23 @@ let ItemService = class ItemService {
         }
     }
     async updateItem(id, dto, user) {
-        const parentId = parseInt(dto.parentId);
-        if (!id) {
-            throw new common_1.ForbiddenException('Id is required');
-        }
-        if (!dto.name && !dto.color && !parentId) {
-            throw new common_1.ForbiddenException('Name, color or parentId are required');
-        }
-        const parentExists = await this.prisma.item.findUnique({
-            where: { id: parentId },
-        });
-        if (!parentExists) {
-            throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
-        }
-        if (parentExists.ownerId !== user.id) {
-            throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
+        if (dto.parentId != null && dto.parentId !== '') {
+            const parentId = parseInt(dto.parentId);
+            if (!id) {
+                throw new common_1.ForbiddenException('Id is required');
+            }
+            if (!dto.name && !dto.color && !parentId) {
+                throw new common_1.ForbiddenException('Name, color or parentId are required');
+            }
+            const parentExists = await this.prisma.item.findUnique({
+                where: { id: parentId },
+            });
+            if (!parentExists) {
+                throw new common_1.NotFoundException(`Parent con ID ${parentId} non trovato`);
+            }
+            if (parentExists.ownerId !== user.id) {
+                throw new common_1.ForbiddenException('Non hai i permessi per utilizzare questo parent');
+            }
         }
         try {
             const item = await this.prisma.item.update({
@@ -87,9 +89,17 @@ let ItemService = class ItemService {
                 data: {
                     ...(dto.name && { name: dto.name }),
                     ...(dto.color && { color: dto.color }),
-                    ...(parentId && {
-                        parent: { connect: { id: parentId } },
-                    }),
+                    ...(dto.parentId
+                        ? {
+                            parent: {
+                                connect: {
+                                    id: parseInt(dto.parentId)
+                                        ? parseInt(dto.parentId)
+                                        : undefined,
+                                },
+                            },
+                        }
+                        : {}),
                     updatedAt: new Date(),
                 },
             });
@@ -149,7 +159,8 @@ let ItemService = class ItemService {
                         is: {
                             id: user.id,
                         }
-                    }
+                    },
+                    parentId: null
                 },
             });
             const itemFileIds = [];
@@ -218,19 +229,20 @@ let ItemService = class ItemService {
                     ownerId: user.id,
                 },
             });
-            const fileSons = await this.prisma.file.findMany({
+            const childrenFile = await this.prisma.file.findMany({
                 where: {
                     itemId: {
                         in: itemSons.map((son) => son.id),
                     },
                 },
             });
-            const folderSons = itemSons.filter(son => !fileSons.some(file => file.itemId === son.id));
+            const childrenFolder = itemSons.filter(son => !childrenFile.some(file => file.itemId === son.id));
+            console.log(item, childrenFile, childrenFolder);
             return {
                 item,
-                sons: {
-                    files: fileSons,
-                    folders: folderSons,
+                children: {
+                    files: childrenFile,
+                    folders: childrenFolder,
                 },
             };
         }

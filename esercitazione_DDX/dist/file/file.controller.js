@@ -27,6 +27,10 @@ let FileController = class FileController {
     uploadFile(file, dto, user) {
         return this.fileService.saveFile(file, dto, user);
     }
+    async getFilesByIds(ids, user) {
+        const fileIds = ids.split(',').map(id => id.trim());
+        return this.fileService.getFilesByIds(fileIds, user);
+    }
     async getFile(id, res) {
         const fileData = await this.fileService.getFileById(id);
         res.setHeader('Content-Type', fileData.fileType);
@@ -52,6 +56,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, file_dto_1.FileDto, Object]),
     __metadata("design:returntype", void 0)
 ], FileController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.Get)(''),
+    __param(0, (0, common_1.Query)('ids')),
+    __param(1, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FileController.prototype, "getFilesByIds", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

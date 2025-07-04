@@ -28,6 +28,16 @@ export declare class FileController {
         };
         user: number;
     }>;
+    getFilesByIds(ids: string, user: User): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fileType: string;
+        fileName: string;
+        storage: number;
+        path: string;
+        itemId: number;
+    }[]>;
     getFile(id: string, res: Response): Promise<import("fs").ReadStream>;
     updateFile(id: string, dto: FileDto, user: User): Promise<{
         message: string;

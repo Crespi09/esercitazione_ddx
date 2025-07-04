@@ -90,6 +90,28 @@ let FileService = class FileService {
             throw new Error('File not Found');
         }
     }
+    async getFilesByIds(fileIds, user) {
+        if (fileIds.length > 0) {
+            const numericIds = fileIds.map(id => Number(id));
+            try {
+                const files = await this.prisma.file.findMany({
+                    where: {
+                        id: { in: numericIds },
+                        item: {
+                            ownerId: user.id,
+                        },
+                    },
+                });
+                if (!files || files.length === 0) {
+                    throw new common_1.NotFoundException('Nessun file trovato per gli ID forniti');
+                }
+                return files;
+            }
+            catch (error) {
+                throw error;
+            }
+        }
+    }
     async updateFile(id, dto, user) {
         const parentId = parseInt(dto.parentId);
         if (parentId) {

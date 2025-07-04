@@ -37,6 +37,16 @@ export declare class FileService {
         path: string;
         itemId: number;
     }>;
+    getFilesByIds(fileIds: string[], user: User): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fileType: string;
+        fileName: string;
+        storage: number;
+        path: string;
+        itemId: number;
+    }[]>;
     updateFile(id: string, dto: FileDto, user: User): Promise<{
         message: string;
         item: {

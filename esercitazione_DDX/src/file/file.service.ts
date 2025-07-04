@@ -98,6 +98,7 @@ export class FileService {
     }
   }
 
+  // TODO - aggiungere anche quelli shared
   async getFilesByIds(fileIds: string[], user: User) {
 
     if (fileIds.length > 0) {

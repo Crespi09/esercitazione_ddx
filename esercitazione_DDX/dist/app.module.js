@@ -17,6 +17,7 @@ const item_module_1 = require("./item/item.module");
 const file_module_1 = require("./file/file.module");
 const shared_module_1 = require("./shared/shared.module");
 const storage_module_1 = require("./storage/storage.module");
+const favorite_module_1 = require("./favorite/favorite.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,7 +32,8 @@ exports.AppModule = AppModule = __decorate([
             item_module_1.ItemModule,
             file_module_1.FileModule,
             shared_module_1.SharedModule,
-            storage_module_1.StorageModule
+            storage_module_1.StorageModule,
+            favorite_module_1.FavoriteModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

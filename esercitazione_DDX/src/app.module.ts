@@ -9,6 +9,8 @@ import { ItemModule } from './item/item.module';
 import { FileModule } from './file/file.module';
 import { SharedModule } from './shared/shared.module';
 import { StorageModule } from './storage/storage.module';
+import { FavoriteModule } from './favorite/favorite.module';
+import { BinModule } from './bin/bin.module';
 
 @Module({
   imports: [
@@ -20,7 +22,9 @@ import { StorageModule } from './storage/storage.module';
     ItemModule,
     FileModule,
     SharedModule,
-    StorageModule
+    StorageModule,
+    FavoriteModule,
+    BinModule
   ],
   controllers: [AppController],
   providers: [AppService],

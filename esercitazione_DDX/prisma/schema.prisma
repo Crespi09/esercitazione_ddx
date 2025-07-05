@@ -18,7 +18,9 @@ model User {
 
   // Relazioni
   items        Item[]
-  sharedWithMe Shared[] @relation("SharedWith")
+  sharedWithMe Shared[]   @relation("SharedWith")
+  favorites    Favorite[] // Nuova relazione
+  binItems     Bin[]      // Nuova relazione
 }
 
 // ITEMS ->   ID, owner_id, name, parent_id = null, color, updatedAt, createAt
@@ -36,9 +38,11 @@ model Item {
   parent   Item? @relation("ItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   parentId Int? // FK autoreferenziante per struttura gerarchica
 
-  children Item[]   @relation("ItemHierarchy")
-  file     File? // Relazione opzionale con un file
-  shared   Shared[] // Item condivisi con altri utenti
+  children  Item[]     @relation("ItemHierarchy")
+  file      File?
+  shared    Shared[]
+  favorites Favorite[] // Nuova relazione
+  binItems  Bin[]      // Nuova relazione
 }
 
 // FILES ->   ID, fileType, fileName, storage, path, updatedAt, createAt
@@ -71,4 +75,37 @@ model Shared {
 
   // Indice composito per evitare condivisioni duplicate
   @@unique([itemId, sharedWithId])
+}
+
+// FAVORITES -> ID, user_id, item_id, createdAt
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  // Relazioni
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int
+
+  // Indice composito per evitare favoriti duplicati
+  @@unique([userId, itemId])
+}
+
+// BIN -> ID, user_id, item_id, deletedAt, createdAt
+model Bin {
+  id        Int      @id @default(autoincrement())
+  deletedAt DateTime @default(now()) // Quando è stato spostato nel bin
+  createdAt DateTime @default(now())
+
+  // Relazioni
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int
+
+  // Indice composito per evitare duplicati nel bin
+  @@unique([userId, itemId])
 }

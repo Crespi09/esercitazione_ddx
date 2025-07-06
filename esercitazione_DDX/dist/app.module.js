@@ -18,6 +18,7 @@ const file_module_1 = require("./file/file.module");
 const shared_module_1 = require("./shared/shared.module");
 const storage_module_1 = require("./storage/storage.module");
 const favorite_module_1 = require("./favorite/favorite.module");
+const bin_module_1 = require("./bin/bin.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -33,7 +34,8 @@ exports.AppModule = AppModule = __decorate([
             file_module_1.FileModule,
             shared_module_1.SharedModule,
             storage_module_1.StorageModule,
-            favorite_module_1.FavoriteModule
+            favorite_module_1.FavoriteModule,
+            bin_module_1.BinModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -1,20 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateBinDto } from './dto/create-bin.dto';
 import { UpdateBinDto } from './dto/update-bin.dto';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class BinService {
-  create(createBinDto: CreateBinDto, user: User) {
-    return 'This action adds a new bin';
+  constructor(private prisma: PrismaService) {}
+
+  async create(dto: CreateBinDto, user: User) {
+    try {
+      if (dto.itemId == null || dto.itemId === '') {
+        throw new Error('Item ID is required');
+      }
+
+      const bin = await this.prisma.bin.create({
+        data: {
+          itemId: parseInt(dto.itemId),
+          userId: user.id,
+          createdAt: new Date(),
+        },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          // duplicated fields error
+          throw new ForbiddenException('Elements already exist');
+        }
+      }
+      throw error;
+    }
   }
 
   findAll(user: User) {
-    return `This action returns all bin for user ${user.id}`;
+    try {
+      return this.prisma.bin.findMany({
+        where: { userId: user.id },
+        include: { item: true },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Bin not found');
+        }
+      }
+      throw error;
+    }
   }
 
   findOne(id: number, user: User) {
-    return `This action returns a #${id} bin for user ${user.id}`;
+    try {
+      return this.prisma.bin.findUnique({
+        where: { id, userId: user.id },
+        include: { item: true },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Bin not found');
+        }
+      }
+      throw error;
+    }
   }
 
   update(id: number, updateBinDto: UpdateBinDto, user: User) {
@@ -22,6 +72,18 @@ export class BinService {
   }
 
   remove(id: number, user: User) {
-    return `This action removes a #${id} bin for user ${user.id}`;
+    try {
+      this.prisma.bin.delete({
+        where: { id, userId: user.id },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Bin not found');
+        }
+      }
+      throw error;
+    }
   }
 }

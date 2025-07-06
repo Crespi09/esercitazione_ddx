@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';
@@ -27,11 +38,16 @@ export class FavoriteController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFavoriteDto: UpdateFavoriteDto, @GetUser() user: User) {
+  update(
+    @Param('id') id: string,
+    @Body() updateFavoriteDto: UpdateFavoriteDto,
+    @GetUser() user: User,
+  ) {
     return this.favoriteService.update(+id, updateFavoriteDto, user);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT) // 204
   remove(@Param('id') id: string, @GetUser() user: User) {
     return this.favoriteService.remove(+id, user);
   }

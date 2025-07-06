@@ -26,7 +26,7 @@ export class FavoriteService {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           // duplicated fields error
-          throw new ForbiddenException('Credentials taken');
+          throw new ForbiddenException('Elements already exist');
         }
       }
       throw error;
@@ -41,9 +41,9 @@ export class FavoriteService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          // duplicated fields error
-          throw new ForbiddenException('Credentials taken');
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Favorite not found');
         }
       }
       throw error;
@@ -58,15 +58,14 @@ export class FavoriteService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          // duplicated fields error
-          throw new ForbiddenException('Credentials taken');
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Favorite not found');
         }
       }
       throw error;
-      
     }
-  } 
+  }
 
   update(id: number, updateFavoriteDto: UpdateFavoriteDto, user: User) {
     return `This action updates a #${id} favorite`;
@@ -74,14 +73,14 @@ export class FavoriteService {
 
   remove(id: number, user: User) {
     try {
-      return this.prisma.favorite.delete({
+      this.prisma.favorite.delete({
         where: { id, userId: user.id },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          // duplicated fields error
-          throw new ForbiddenException('Credentials taken');
+        if (error.code === 'P2025') {
+          // Record to delete does not exist
+          throw new ForbiddenException('Favorite not found');
         }
       }
       throw error;

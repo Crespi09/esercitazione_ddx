@@ -9,11 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FavoriteService = void 0;
+exports.BinService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const library_1 = require("@prisma/client/runtime/library");
-let FavoriteService = class FavoriteService {
+let BinService = class BinService {
     constructor(prisma) {
         this.prisma = prisma;
     }
@@ -22,7 +22,7 @@ let FavoriteService = class FavoriteService {
             if (dto.itemId == null || dto.itemId === '') {
                 throw new Error('Item ID is required');
             }
-            const favorite = await this.prisma.favorite.create({
+            const bin = await this.prisma.bin.create({
                 data: {
                     itemId: parseInt(dto.itemId),
                     userId: user.id,
@@ -41,7 +41,7 @@ let FavoriteService = class FavoriteService {
     }
     findAll(user) {
         try {
-            return this.prisma.favorite.findMany({
+            return this.prisma.bin.findMany({
                 where: { userId: user.id },
                 include: { item: true },
             });
@@ -49,7 +49,7 @@ let FavoriteService = class FavoriteService {
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') {
-                    throw new common_1.ForbiddenException('Favorite not found');
+                    throw new common_1.ForbiddenException('Bin not found');
                 }
             }
             throw error;
@@ -57,7 +57,7 @@ let FavoriteService = class FavoriteService {
     }
     findOne(id, user) {
         try {
-            return this.prisma.favorite.findUnique({
+            return this.prisma.bin.findUnique({
                 where: { id, userId: user.id },
                 include: { item: true },
             });
@@ -65,34 +65,34 @@ let FavoriteService = class FavoriteService {
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') {
-                    throw new common_1.ForbiddenException('Favorite not found');
+                    throw new common_1.ForbiddenException('Bin not found');
                 }
             }
             throw error;
         }
     }
-    update(id, updateFavoriteDto, user) {
-        return `This action updates a #${id} favorite`;
+    update(id, updateBinDto, user) {
+        return `This action updates a #${id} bin for user ${user.id}`;
     }
     remove(id, user) {
         try {
-            return this.prisma.favorite.delete({
+            return this.prisma.bin.delete({
                 where: { id, userId: user.id },
             });
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') {
-                    throw new common_1.ForbiddenException('Favorite not found');
+                    throw new common_1.ForbiddenException('Bin not found');
                 }
             }
             throw error;
         }
     }
 };
-exports.FavoriteService = FavoriteService;
-exports.FavoriteService = FavoriteService = __decorate([
+exports.BinService = BinService;
+exports.BinService = BinService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
-], FavoriteService);
-//# sourceMappingURL=favorite.service.js.map
+], BinService);
+//# sourceMappingURL=bin.service.js.map

@@ -76,6 +76,9 @@ let BinService = class BinService {
     }
     remove(id, user) {
         try {
+            this.prisma.favorite.delete({
+                where: { userId_itemId: { userId: user.id, itemId: id } },
+            });
             return this.prisma.bin.delete({
                 where: { userId_itemId: { userId: user.id, itemId: id } },
             });

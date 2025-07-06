@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Giu 25, 2025 alle 15:32
+-- Creato il: Lug 07, 2025 alle 00:14
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -20,6 +20,49 @@ SET time_zone = "+00:00";
 --
 -- Database: `ddx`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Bin`
+--
+
+CREATE TABLE `Bin` (
+  `id` int(11) NOT NULL,
+  `deletedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `userId` int(11) NOT NULL,
+  `itemId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `Bin`
+--
+
+INSERT INTO `Bin` (`id`, `deletedAt`, `createdAt`, `userId`, `itemId`) VALUES
+(1, '2025-07-06 18:26:22.170', '2025-07-06 18:26:22.169', 1, 2),
+(2, '2025-07-06 18:28:48.091', '2025-07-06 18:28:48.090', 1, 3),
+(3, '2025-07-06 18:29:23.996', '2025-07-06 18:29:23.995', 1, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Favorite`
+--
+
+CREATE TABLE `Favorite` (
+  `id` int(11) NOT NULL,
+  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `userId` int(11) NOT NULL,
+  `itemId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `Favorite`
+--
+
+INSERT INTO `Favorite` (`id`, `createdAt`, `userId`, `itemId`) VALUES
+(1, '2025-07-06 18:22:53.784', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -43,7 +86,9 @@ CREATE TABLE `File` (
 --
 
 INSERT INTO `File` (`id`, `fileType`, `fileName`, `storage`, `path`, `createdAt`, `updatedAt`, `itemId`) VALUES
-(2, 'image/png', 'spidamana.png', 48983, 'uploads\\file-1750252218047-392608884.png', '2025-06-18 13:10:18.064', '2025-06-18 13:10:18.064', 8);
+(1, 'image/jpeg', 'aaaaa', 63869, 'uploads\\file-1751826183916-230576872.jpg', '2025-07-06 18:23:03.944', '2025-07-06 18:23:11.075', 2),
+(2, 'image/jpeg', 'bbbbb', 63869, 'uploads\\file-1751826248712-24527411.jpg', '2025-07-06 18:24:08.747', '2025-07-06 18:24:24.437', 3),
+(3, 'image/jpeg', '36f771ae-d6b5-4500-8053-6bdab3f4d6b22421294997167984439.jpg', 63412, 'uploads\\file-1751826562436-709739153.jpg', '2025-07-06 18:29:22.471', '2025-07-06 18:29:22.471', 4);
 
 -- --------------------------------------------------------
 
@@ -66,11 +111,10 @@ CREATE TABLE `Item` (
 --
 
 INSERT INTO `Item` (`id`, `name`, `color`, `createdAt`, `updatedAt`, `ownerId`, `parentId`) VALUES
-(1, 'folderUpdatedName', '#f59673', '2025-06-08 10:15:53.741', '2025-06-08 10:29:19.995', 30, NULL),
-(5, 'folder_test2', '#f56982', '2025-06-08 10:23:12.199', '2025-06-08 10:23:12.199', 30, NULL),
-(9, 'folder_son', '#f56982', '2025-06-08 10:23:12.199', '2025-06-08 10:23:12.199', 30, 1),
-(6, 'folder_test', '#056874', '2025-06-16 10:26:39.554', '2025-06-16 10:26:39.554', 33, NULL),
-(8, 'spidamana.png', NULL, '2025-06-18 13:10:18.051', '2025-06-18 13:10:18.051', 33, NULL);
+(1, 'test', 'f44336', '2025-07-06 18:22:52.358', '2025-07-06 18:22:52.358', 1, NULL),
+(2, 'aaaaa', NULL, '2025-07-06 18:23:03.937', '2025-07-06 18:23:11.079', 1, NULL),
+(3, 'bbbbb', NULL, '2025-07-06 18:24:08.737', '2025-07-06 18:24:24.442', 1, NULL),
+(4, '36f771ae-d6b5-4500-8053-6bdab3f4d6b22421294997167984439.jpg', NULL, '2025-07-06 18:29:22.463', '2025-07-06 18:29:22.463', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -85,14 +129,6 @@ CREATE TABLE `Shared` (
   `itemId` int(11) NOT NULL,
   `sharedWithId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dump dei dati per la tabella `Shared`
---
-
-INSERT INTO `Shared` (`id`, `createdAt`, `updatedAt`, `itemId`, `sharedWithId`) VALUES
-(2, '2025-06-23 09:52:43.272', '2025-06-23 09:52:43.272', 8, 30),
-(6, '2025-06-23 10:49:05.679', '2025-06-23 10:49:05.679', 6, 30);
 
 -- --------------------------------------------------------
 
@@ -114,42 +150,27 @@ CREATE TABLE `User` (
 --
 
 INSERT INTO `User` (`id`, `username`, `hash`, `refreshToken`, `createdAt`, `updatedAt`) VALUES
-(30, 'gianfranco', '$argon2id$v=19$m=65536,t=3,p=4$6680liCBx80VzKDn9TtELg$fwOGKBtHFYT7FTPbWj3QMcvv4oC8RFI+NVjAOwHvqFA', '$argon2id$v=19$m=65536,t=3,p=4$ZTzSAVUD3eDxUvYJjgibcg$gZlp2ueM0pzw5hgoE8qbdKV1WnYbDeaarkii4VrwqSM', '2024-11-18 17:52:13.170', '2025-06-23 10:47:51.603'),
-(33, 'pierino', '$argon2id$v=19$m=65536,t=3,p=4$wdj3R8nkMxliG8IYKNgKrQ$3sDwAdiIAW4z/sEv1pPrCKk85/WaWccwy2vf1MiwaN0', '$argon2id$v=19$m=65536,t=3,p=4$AoWLzm3TcwbZOBYzKfGoag$Ccz7QaeucBaeKumcC27CQgmeeRkhQl5xAjOC2b7KOQM', '2024-11-19 22:11:09.537', '2025-06-25 11:51:31.172');
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `_prisma_migrations`
---
-
-CREATE TABLE `_prisma_migrations` (
-  `id` varchar(36) NOT NULL,
-  `checksum` varchar(64) NOT NULL,
-  `finished_at` datetime(3) DEFAULT NULL,
-  `migration_name` varchar(255) NOT NULL,
-  `logs` text DEFAULT NULL,
-  `rolled_back_at` datetime(3) DEFAULT NULL,
-  `started_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `applied_steps_count` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dump dei dati per la tabella `_prisma_migrations`
---
-
-INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
-('2e19e85c-356c-4fd1-8105-5c20811fc283', 'cedd386e97f327e2eaf2d0a530b6dd8878814f3c4e9b9022eb0295c99472a02f', '2024-11-17 00:37:17.670', '20241117003717_add_user_table', NULL, NULL, '2024-11-17 00:37:17.654', 1),
-('3e79d547-ad38-4364-8d5d-fd0c1f17a229', 'f23d26bf123193aa51f830a7d99e03e0021a3790d5ec963c5b983ee5c1d1215a', '2024-11-18 13:57:58.663', '20241118105848_add_user_table', NULL, NULL, '2024-11-18 13:57:58.609', 1),
-('43a4772e-08f1-4855-96ef-efa47de24be1', 'b02b8e431c681e7a56eac7156162bf2653076cfafa311b54c14a6980fd9fb80e', '2024-11-18 14:02:49.113', '20241118135814_alter_user_table', NULL, NULL, '2024-11-18 14:02:49.098', 1),
-('56a8e852-4552-4177-8574-3054be899254', 'e4bf5823181a0255ff254868c5c3c4df7cc854b7a0de03c9e6d014eb9940afb3', '2024-11-17 00:37:17.449', '20241117001732_add_user_table', NULL, NULL, '2024-11-17 00:37:17.411', 1),
-('b3176786-26ab-487b-8a5c-f90fec4b3c7e', '4e79cbe93b14487d4963cebe1e84040e24ad62c8a7ec9840a2588f3119494302', '2025-06-16 11:22:29.170', '20250616112229_storage', NULL, NULL, '2025-06-16 11:22:29.096', 1),
-('d6415869-eeda-4473-916b-fcc32299e68b', '89dac817504415e8847c3b4c885fa8136e4f8ad0efcd8234529d99bb74365e31', '2024-11-18 17:41:54.220', '20241118174154_modifica_tabella', NULL, NULL, '2024-11-18 17:41:54.121', 1),
-('dbe30f80-e948-415e-a62d-e9a13d5062ba', '09d8f0966ca8433e1a27e83687faf2ac784071f9bd73b353bd555c90b7d37c20', '2025-06-08 06:03:04.342', '20250603131048_add', NULL, NULL, '2025-06-08 06:03:03.911', 1);
+(1, 'gianfranco', '$argon2id$v=19$m=65536,t=3,p=4$zdR0H2Yw6XKLjE+1q4ERRA$OBpfAHvttc6NQE4V1FSxyWXX3cOrXhRQXBdzAKJEtT8', '$argon2id$v=19$m=65536,t=3,p=4$R329NU/yPiaaUTTb49w7dg$q7CBBKwoW8ZL/o3kZJS81g2GG2LJg7PUzocYajoFNVA', '2025-07-06 18:20:42.193', '2025-07-06 21:51:57.125');
 
 --
 -- Indici per le tabelle scaricate
 --
+
+--
+-- Indici per le tabelle `Bin`
+--
+ALTER TABLE `Bin`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `Bin_userId_itemId_key` (`userId`,`itemId`),
+  ADD KEY `Bin_itemId_fkey` (`itemId`);
+
+--
+-- Indici per le tabelle `Favorite`
+--
+ALTER TABLE `Favorite`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `Favorite_userId_itemId_key` (`userId`,`itemId`),
+  ADD KEY `Favorite_itemId_fkey` (`itemId`);
 
 --
 -- Indici per le tabelle `File`
@@ -182,42 +203,62 @@ ALTER TABLE `User`
   ADD UNIQUE KEY `User_username_key` (`username`);
 
 --
--- Indici per le tabelle `_prisma_migrations`
---
-ALTER TABLE `_prisma_migrations`
-  ADD PRIMARY KEY (`id`);
-
---
 -- AUTO_INCREMENT per le tabelle scaricate
 --
+
+--
+-- AUTO_INCREMENT per la tabella `Bin`
+--
+ALTER TABLE `Bin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT per la tabella `Favorite`
+--
+ALTER TABLE `Favorite`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT per la tabella `File`
 --
 ALTER TABLE `File`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT per la tabella `Item`
 --
 ALTER TABLE `Item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT per la tabella `Shared`
 --
 ALTER TABLE `Shared`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT per la tabella `User`
 --
 ALTER TABLE `User`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Limiti per le tabelle scaricate
 --
+
+--
+-- Limiti per la tabella `Bin`
+--
+ALTER TABLE `Bin`
+  ADD CONSTRAINT `Bin_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `Bin_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Limiti per la tabella `Favorite`
+--
+ALTER TABLE `Favorite`
+  ADD CONSTRAINT `Favorite_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `Favorite_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `File`

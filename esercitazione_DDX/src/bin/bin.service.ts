@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class BinService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateBinDto, user: User) {
     try {
@@ -33,18 +33,43 @@ export class BinService {
     }
   }
 
-  findAll(user: User) {
+  async findAll(user: User) {
     try {
-      return this.prisma.bin.findMany({
+      const bins = await this.prisma.bin.findMany({
         where: { userId: user.id },
         include: { item: true },
       });
+
+      const binItemIds = bins.map(bin => bin.itemId);
+
+      const files = await this.prisma.file.findMany({
+        where: { itemId: { in: binItemIds } },
+        include: { item: true },
+      });
+
+      const fileBinItemIds = new Set(files.map(file => file.itemId));
+
+      const folderBins = bins
+        .filter(bin => !fileBinItemIds.has(bin.itemId))
+        .map(bin => ({
+          ...bin.item,
+          isInBin: true,
+        }));
+
+      const fileBins = bins
+        .filter(bin => fileBinItemIds.has(bin.itemId))
+        .map(bin => {
+          const fileData = files.find(file => file.itemId === bin.itemId);
+          return {
+            ...fileData,
+            isInBin: true,
+          };
+        });
+
+      return { folders: folderBins, files: fileBins };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          // Record to delete does not exist
-          throw new ForbiddenException('Bin not found');
-        }
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new ForbiddenException('Bin not found');
       }
       throw error;
     }
@@ -73,6 +98,11 @@ export class BinService {
 
   remove(id: number, user: User) {
     try {
+
+      this.prisma.favorite.delete({
+        where: { userId_itemId: { userId: user.id, itemId: id } },
+      });
+
       return this.prisma.bin.delete({
         where: { userId_itemId: { userId: user.id, itemId: id } },
       });

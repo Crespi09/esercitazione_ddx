@@ -160,7 +160,12 @@ let ItemService = class ItemService {
                             id: user.id,
                         }
                     },
-                    parentId: null
+                    parentId: null,
+                    binItems: {
+                        none: {
+                            userId: user.id,
+                        },
+                    },
                 },
             });
             const itemFileIds = [];
@@ -182,6 +187,15 @@ let ItemService = class ItemService {
                     itemFolderIds.push(element.id);
                 }
             }));
+            const userFavorites = await this.prisma.favorite.findMany({
+                where: {
+                    userId: user.id,
+                    itemId: {
+                        in: [...itemFileIds, ...itemFolderIds],
+                    },
+                },
+            });
+            const favoriteItemIds = new Set(userFavorites.map(fav => fav.itemId));
             const itemsFolder = await this.prisma.item.findMany({
                 where: {
                     id: {
@@ -194,18 +208,27 @@ let ItemService = class ItemService {
                     }
                 },
             });
-            console.log('itemFileIds', itemFileIds);
-            console.log('itemFolderIds', itemFolderIds);
             const itemsFile = await this.prisma.file.findMany({
                 where: {
                     itemId: {
                         in: itemFileIds,
                     },
                 },
+                include: {
+                    item: true,
+                },
             });
+            const foldersWithFavorites = itemsFolder.map(folder => ({
+                ...folder,
+                isFavourite: favoriteItemIds.has(folder.id),
+            }));
+            const filesWithFavorites = itemsFile.map(file => ({
+                ...file,
+                isFavourite: favoriteItemIds.has(file.itemId),
+            }));
             return {
-                folders: itemsFolder,
-                files: itemsFile,
+                folders: foldersWithFavorites,
+                files: filesWithFavorites,
             };
         }
         catch (error) {

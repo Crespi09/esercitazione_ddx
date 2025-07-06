@@ -77,7 +77,7 @@ let FavoriteService = class FavoriteService {
     remove(id, user) {
         try {
             return this.prisma.favorite.delete({
-                where: { id, userId: user.id },
+                where: { userId_itemId: { userId: user.id, itemId: id } },
             });
         }
         catch (error) {

@@ -26,6 +26,7 @@ export declare class ItemService {
     }>;
     allItems(limit: number, offset: number, user: User): Promise<{
         folders: {
+            isFavourite: boolean;
             id: number;
             createdAt: Date;
             updatedAt: Date;
@@ -35,6 +36,16 @@ export declare class ItemService {
             parentId: number | null;
         }[];
         files: {
+            isFavourite: boolean;
+            item: {
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                color: string | null;
+                ownerId: number;
+                parentId: number | null;
+            };
             id: number;
             createdAt: Date;
             updatedAt: Date;

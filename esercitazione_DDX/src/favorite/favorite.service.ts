@@ -73,8 +73,8 @@ export class FavoriteService {
 
   remove(id: number, user: User) {
     try {
-      this.prisma.favorite.delete({
-        where: { id, userId: user.id },
+      return this.prisma.favorite.delete({
+        where: { userId_itemId: { userId: user.id, itemId: id } },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {

@@ -77,7 +77,7 @@ let BinService = class BinService {
     remove(id, user) {
         try {
             return this.prisma.bin.delete({
-                where: { id, userId: user.id },
+                where: { userId_itemId: { userId: user.id, itemId: id } },
             });
         }
         catch (error) {

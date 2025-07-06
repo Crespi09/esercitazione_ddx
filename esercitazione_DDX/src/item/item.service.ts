@@ -173,25 +173,6 @@ export class ItemService {
       throw new ForbiddenException('Offset must be greater than or equal to 0');
     }
 
-
-    /*
-
-      andare a prendere tutti gli item dell'utente in base al limit e offset
-
-      dividerli in due array differenti se sono folder o file, per vedere se sono file  comparo l'id di ogni item
-      con file.itemId
-      
-      folder
-      - f1
-      - f2
-      - f3
-
-      file 
-      -file1
-      -file2
-      -file3
-    */
-
     try {
       const items = await this.prisma.item.findMany({
         take: limit,
@@ -203,7 +184,13 @@ export class ItemService {
               id: user.id,
             }
           },
-          parentId: null
+          parentId: null,
+          // Esclude gli item che sono nel bin
+          binItems: {
+            none: {
+              userId: user.id,
+            },
+          },
         },
       });
 
@@ -229,6 +216,18 @@ export class ItemService {
         }
       }));
 
+      // Ottieni i favoriti dell'utente per tutti gli items
+      const userFavorites = await this.prisma.favorite.findMany({
+        where: {
+          userId: user.id,
+          itemId: {
+            in: [...itemFileIds, ...itemFolderIds],
+          },
+        },
+      });
+
+      const favoriteItemIds = new Set(userFavorites.map(fav => fav.itemId));
+
       const itemsFolder = await this.prisma.item.findMany({
         where: {
           id: {
@@ -242,20 +241,32 @@ export class ItemService {
         },
       });
 
-      console.log('itemFileIds', itemFileIds);
-      console.log('itemFolderIds', itemFolderIds);
-
       const itemsFile = await this.prisma.file.findMany({
         where: {
           itemId: {
             in: itemFileIds,
           },
         },
+        include: {
+          item: true,
+        },
       });
 
+      // Aggiungi isFavourite ai folders
+      const foldersWithFavorites = itemsFolder.map(folder => ({
+        ...folder,
+        isFavourite: favoriteItemIds.has(folder.id),
+      }));
+
+      // Aggiungi isFavourite ai files
+      const filesWithFavorites = itemsFile.map(file => ({
+        ...file,
+        isFavourite: favoriteItemIds.has(file.itemId),
+      }));
+
       return {
-        folders: itemsFolder,
-        files: itemsFile,
+        folders: foldersWithFavorites,
+        files: filesWithFavorites,
       };
 
     } catch (error) {

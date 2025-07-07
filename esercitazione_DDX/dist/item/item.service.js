@@ -139,6 +139,26 @@ let ItemService = class ItemService {
             throw error;
         }
     }
+    async getItemsByIds(itemIds, user) {
+        if (itemIds.length > 0) {
+            const numericIds = itemIds.map(id => Number(id));
+            try {
+                const item = await this.prisma.item.findMany({
+                    where: {
+                        id: { in: numericIds },
+                        ownerId: user.id,
+                    },
+                });
+                if (!item || item.length === 0) {
+                    throw new common_1.NotFoundException('Nessun item trovato per gli ID forniti');
+                }
+                return item;
+            }
+            catch (error) {
+                throw error;
+            }
+        }
+    }
     async allItems(limit, offset, user) {
         if (limit === undefined || limit === null || offset === undefined || offset === null) {
             throw new common_1.ForbiddenException('Limit and offset are required');

@@ -24,6 +24,15 @@ export declare class ItemService {
         ownerId: number;
         parentId: number | null;
     }>;
+    getItemsByIds(itemIds: string[], user: User): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        color: string | null;
+        ownerId: number;
+        parentId: number | null;
+    }[]>;
     allItems(limit: number, offset: number, user: User): Promise<{
         folders: {
             isFavourite: boolean;

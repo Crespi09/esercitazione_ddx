@@ -24,6 +24,15 @@ export declare class ItemController {
         ownerId: number;
         parentId: number | null;
     }>;
+    getItemByIds(ids: string, user: User): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        color: string | null;
+        ownerId: number;
+        parentId: number | null;
+    }[]>;
     allItems(limit: string, offset: string, user: User): Promise<{
         folders: {
             isFavourite: boolean;

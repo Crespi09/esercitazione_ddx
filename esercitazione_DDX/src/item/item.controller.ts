@@ -39,6 +39,13 @@ export class ItemController {
     }
 
 
+    @Get('')
+    async getItemByIds(@Query('ids') ids: string, @GetUser() user: User) {
+        const itemIds = ids.split(',').map(id => id.trim());
+        return this.itemService.getItemsByIds(itemIds, user);
+    }
+
+
     @Get('all')
     @HttpCode(HttpStatus.OK) // 200
     allItems(@Query('limit') limit: string, @Query('offset') offset: string, @GetUser() user: User) {

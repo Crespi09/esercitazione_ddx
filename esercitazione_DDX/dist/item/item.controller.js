@@ -32,6 +32,10 @@ let ItemController = class ItemController {
     deleteItem(id, user) {
         return this.itemService.deleteItem(id, user);
     }
+    async getItemByIds(ids, user) {
+        const itemIds = ids.split(',').map(id => id.trim());
+        return this.itemService.getItemsByIds(itemIds, user);
+    }
     allItems(limit, offset, user) {
         return this.itemService.allItems(parseInt(limit), parseInt(offset), user);
     }
@@ -68,6 +72,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ItemController.prototype, "deleteItem", null);
+__decorate([
+    (0, common_1.Get)(''),
+    __param(0, (0, common_1.Query)('ids')),
+    __param(1, (0, decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ItemController.prototype, "getItemByIds", null);
 __decorate([
     (0, common_1.Get)('all'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

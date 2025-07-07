@@ -160,6 +160,32 @@ export class ItemService {
     }
   }
 
+
+  async getItemsByIds(itemIds: string[], user: User) {
+
+    if (itemIds.length > 0) {
+      const numericIds = itemIds.map(id => Number(id));
+      try {
+        const item = await this.prisma.item.findMany({
+          where: {
+            id: { in: numericIds },
+            ownerId: user.id,
+          },
+        });
+
+        if (!item || item.length === 0) {
+          throw new NotFoundException('Nessun item trovato per gli ID forniti');
+        }
+        return item;
+
+      } catch (error) {
+        throw error;
+      }
+
+    }
+
+  }
+
   async allItems(limit: number, offset: number, user: User) {
     if (limit === undefined || limit === null || offset === undefined || offset === null) {
       throw new ForbiddenException('Limit and offset are required');

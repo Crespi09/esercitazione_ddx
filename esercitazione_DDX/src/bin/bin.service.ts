@@ -15,6 +15,18 @@ export class BinService {
         throw new Error('Item ID is required');
       }
 
+
+      const favorite = await this.prisma.favorite.findUnique({
+        where: { userId_itemId: { userId: user.id, itemId: parseInt(dto.itemId) } },
+      });
+
+      if (favorite) {
+        await this.prisma.favorite.delete({
+          where: { userId_itemId: { userId: user.id, itemId: parseInt(dto.itemId) } },
+        });
+
+      }
+
       const bin = await this.prisma.bin.create({
         data: {
           itemId: parseInt(dto.itemId),
@@ -98,11 +110,6 @@ export class BinService {
 
   remove(id: number, user: User) {
     try {
-
-      this.prisma.favorite.delete({
-        where: { userId_itemId: { userId: user.id, itemId: id } },
-      });
-
       return this.prisma.bin.delete({
         where: { userId_itemId: { userId: user.id, itemId: id } },
       });

@@ -39,12 +39,36 @@ let FavoriteService = class FavoriteService {
             throw error;
         }
     }
-    findAll(user) {
+    async findAll(user) {
         try {
-            return this.prisma.favorite.findMany({
+            const favorites = await this.prisma.favorite.findMany({
                 where: { userId: user.id },
                 include: { item: true },
             });
+            const favoriteItemIds = favorites.map(fav => fav.itemId);
+            const files = await this.prisma.file.findMany({
+                where: {
+                    itemId: { in: favoriteItemIds },
+                },
+                include: { item: true },
+            });
+            const fileFavoriteIds = new Set(files.map(file => file.itemId));
+            const folderFavorites = favorites
+                .filter(fav => !fileFavoriteIds.has(fav.itemId))
+                .map(fav => ({
+                ...fav.item,
+                isFavourite: true,
+            }));
+            const fileFavorites = favorites
+                .filter(fav => fileFavoriteIds.has(fav.itemId))
+                .map(fav => {
+                const fileData = files.find(file => file.itemId === fav.itemId);
+                return {
+                    ...fileData,
+                    isFavourite: true,
+                };
+            });
+            return { folders: folderFavorites, files: fileFavorites };
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {

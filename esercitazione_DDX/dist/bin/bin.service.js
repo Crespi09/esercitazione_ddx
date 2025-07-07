@@ -22,6 +22,14 @@ let BinService = class BinService {
             if (dto.itemId == null || dto.itemId === '') {
                 throw new Error('Item ID is required');
             }
+            const favorite = await this.prisma.favorite.findUnique({
+                where: { userId_itemId: { userId: user.id, itemId: parseInt(dto.itemId) } },
+            });
+            if (favorite) {
+                await this.prisma.favorite.delete({
+                    where: { userId_itemId: { userId: user.id, itemId: parseInt(dto.itemId) } },
+                });
+            }
             const bin = await this.prisma.bin.create({
                 data: {
                     itemId: parseInt(dto.itemId),
@@ -39,18 +47,38 @@ let BinService = class BinService {
             throw error;
         }
     }
-    findAll(user) {
+    async findAll(user) {
         try {
-            return this.prisma.bin.findMany({
+            const bins = await this.prisma.bin.findMany({
                 where: { userId: user.id },
                 include: { item: true },
             });
+            const binItemIds = bins.map(bin => bin.itemId);
+            const files = await this.prisma.file.findMany({
+                where: { itemId: { in: binItemIds } },
+                include: { item: true },
+            });
+            const fileBinItemIds = new Set(files.map(file => file.itemId));
+            const folderBins = bins
+                .filter(bin => !fileBinItemIds.has(bin.itemId))
+                .map(bin => ({
+                ...bin.item,
+                isInBin: true,
+            }));
+            const fileBins = bins
+                .filter(bin => fileBinItemIds.has(bin.itemId))
+                .map(bin => {
+                const fileData = files.find(file => file.itemId === bin.itemId);
+                return {
+                    ...fileData,
+                    isInBin: true,
+                };
+            });
+            return { folders: folderBins, files: fileBins };
         }
         catch (error) {
-            if (error instanceof library_1.PrismaClientKnownRequestError) {
-                if (error.code === 'P2025') {
-                    throw new common_1.ForbiddenException('Bin not found');
-                }
+            if (error instanceof library_1.PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new common_1.ForbiddenException('Bin not found');
             }
             throw error;
         }
@@ -76,9 +104,6 @@ let BinService = class BinService {
     }
     remove(id, user) {
         try {
-            this.prisma.favorite.delete({
-                where: { userId_itemId: { userId: user.id, itemId: id } },
-            });
             return this.prisma.bin.delete({
                 where: { userId_itemId: { userId: user.id, itemId: id } },
             });

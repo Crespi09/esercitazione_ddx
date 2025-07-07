@@ -11,7 +11,7 @@ export class SharedService {
 
   async addShareItem(dto: ShareDto, user: User) {
 
-    if (!dto.item_id || !dto.shared_with_id) {
+    if (!dto.item_id || !dto.shared_with) {
       throw new ForbiddenException('item_id e shared_with_id sono obbligatori');
     }
 
@@ -35,15 +35,19 @@ export class SharedService {
         throw new ForbiddenException('Non hai i permessi per condividere questo item');
       }
 
-      const sharedWithId = parseInt(dto.shared_with_id);
-      if (isNaN(sharedWithId)) {
-        throw new ForbiddenException('shared_with_id deve essere un numero valido');
+
+      const sharingUser = await this.prisma.user.findUnique({
+        where: { username: dto.shared_with },
+      });
+
+      if (!sharingUser) {
+        throw new NotFoundException(`User con username ${dto.shared_with} non trovato`);
       }
 
       const share = await this.prisma.shared.create({
         data: {
           item: { connect: { id: itemId } },
-          sharedWith: { connect: { id: sharedWithId } },
+          sharedWith: { connect: { id: sharingUser.id } },
           createdAt: new Date(),
           updatedAt: new Date(),
         },

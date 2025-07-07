@@ -7,5 +7,5 @@ export class ShareDto {
 
     @IsString()
     @IsNotEmpty()
-    shared_with_id: string
+    shared_with: string
 }

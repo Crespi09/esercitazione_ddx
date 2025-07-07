@@ -23,5 +23,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], ShareDto.prototype, "shared_with_id", void 0);
+], ShareDto.prototype, "shared_with", void 0);
 //# sourceMappingURL=share.dto.js.map

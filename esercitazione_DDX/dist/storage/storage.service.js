@@ -17,29 +17,19 @@ let StorageService = class StorageService {
         this.prisma = prisma;
     }
     async userStorage(user) {
-        var storageUsed = 0;
-        const items = await this.prisma.item.findMany({
+        const result = await this.prisma.file.aggregate({
+            _sum: {
+                storage: true,
+            },
             where: {
-                owner: {
-                    is: {
-                        id: user.id
-                    }
-                }
-            }
+                item: {
+                    ownerId: user.id,
+                },
+            },
         });
-        await Promise.all(items.map(async (element) => {
-            const file = await this.prisma.file.findUnique({
-                where: {
-                    itemId: element.id
-                }
-            });
-            if (file) {
-                storageUsed += file.storage;
-            }
-        }));
         return {
             message: 'Total Storage used',
-            storage: storageUsed,
+            storage: result._sum.storage,
         };
     }
 };

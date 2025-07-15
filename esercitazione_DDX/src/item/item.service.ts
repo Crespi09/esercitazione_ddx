@@ -69,18 +69,20 @@ export class ItemService {
   }
 
   async updateItem(id: string, dto: UpdateItemDto, user: User) {
+    if (!id) {
+      throw new ForbiddenException('Id is required');
+    }
 
+    if (!dto.name && !dto.color && !dto.hasOwnProperty('parentId')) {
+      throw new ForbiddenException('Name, color or parentId are required');
+    }
 
+    // Validazione del parent solo se parentId non è null
     if (dto.parentId != null && dto.parentId !== '') {
-
       const parentId = parseInt(dto.parentId);
 
-      if (!id) {
-        throw new ForbiddenException('Id is required');
-      }
-
-      if (!dto.name && !dto.color && !parentId) {
-        throw new ForbiddenException('Name, color or parentId are required');
+      if (isNaN(parentId)) {
+        throw new ForbiddenException('Parent ID deve essere un numero valido');
       }
 
       const parentExists = await this.prisma.item.findUnique({
@@ -97,7 +99,6 @@ export class ItemService {
           'Non hai i permessi per utilizzare questo parent',
         );
       }
-
     }
 
     try {
@@ -106,17 +107,17 @@ export class ItemService {
         data: {
           ...(dto.name && { name: dto.name }),
           ...(dto.color && { color: dto.color }),
-          ...(dto.parentId
-            ? {
-              parent: {
-                connect: {
-                  id: parseInt(dto.parentId)
-                    ? parseInt(dto.parentId)
-                    : undefined,
+          ...(dto.hasOwnProperty('parentId') && {
+            ...(dto.parentId
+              ? {
+                parent: {
+                  connect: {
+                    id: parseInt(dto.parentId),
+                  },
                 },
-              },
-            }
-            : {}),
+              }
+              : { parentId: null }),
+          }),
           updatedAt: new Date(),
         },
       });

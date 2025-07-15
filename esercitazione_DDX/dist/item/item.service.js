@@ -65,13 +65,16 @@ let ItemService = class ItemService {
         }
     }
     async updateItem(id, dto, user) {
+        if (!id) {
+            throw new common_1.ForbiddenException('Id is required');
+        }
+        if (!dto.name && !dto.color && !dto.hasOwnProperty('parentId')) {
+            throw new common_1.ForbiddenException('Name, color or parentId are required');
+        }
         if (dto.parentId != null && dto.parentId !== '') {
             const parentId = parseInt(dto.parentId);
-            if (!id) {
-                throw new common_1.ForbiddenException('Id is required');
-            }
-            if (!dto.name && !dto.color && !parentId) {
-                throw new common_1.ForbiddenException('Name, color or parentId are required');
+            if (isNaN(parentId)) {
+                throw new common_1.ForbiddenException('Parent ID deve essere un numero valido');
             }
             const parentExists = await this.prisma.item.findUnique({
                 where: { id: parentId },
@@ -89,17 +92,17 @@ let ItemService = class ItemService {
                 data: {
                     ...(dto.name && { name: dto.name }),
                     ...(dto.color && { color: dto.color }),
-                    ...(dto.parentId
-                        ? {
-                            parent: {
-                                connect: {
-                                    id: parseInt(dto.parentId)
-                                        ? parseInt(dto.parentId)
-                                        : undefined,
+                    ...(dto.hasOwnProperty('parentId') && {
+                        ...(dto.parentId
+                            ? {
+                                parent: {
+                                    connect: {
+                                        id: parseInt(dto.parentId),
+                                    },
                                 },
-                            },
-                        }
-                        : {}),
+                            }
+                            : { parentId: null }),
+                    }),
                     updatedAt: new Date(),
                 },
             });

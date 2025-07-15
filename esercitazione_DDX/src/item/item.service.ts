@@ -4,6 +4,7 @@ import { ItemDto } from './dto/item.dto';
 import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { isFloat32Array } from 'util/types';
 
 @Injectable({})
 export class ItemService {
@@ -242,7 +243,6 @@ export class ItemService {
         }
       }));
 
-      // Ottieni i favoriti dell'utente per tutti gli items
       const userFavorites = await this.prisma.favorite.findMany({
         where: {
           userId: user.id,
@@ -278,13 +278,11 @@ export class ItemService {
         },
       });
 
-      // Aggiungi isFavourite ai folders
       const foldersWithFavorites = itemsFolder.map(folder => ({
         ...folder,
         isFavourite: favoriteItemIds.has(folder.id),
       }));
 
-      // Aggiungi isFavourite ai files
       const filesWithFavorites = itemsFile.map(file => ({
         ...file,
         isFavourite: favoriteItemIds.has(file.itemId),
@@ -329,16 +327,37 @@ export class ItemService {
 
       const childrenFolder = itemSons.filter(son => !childrenFile.some(file => file.itemId === son.id));
 
+
+      const favoriteItems = await this.prisma.favorite.findMany({
+        where: {
+          userId: user.id,
+          itemId: {
+            in: itemSons.map(son => son.id),
+          },
+        },
+      });
+
+
+      const childrenFolderFavorites = childrenFolder.map(folder => ({
+        ...folder,
+        isFavourite: favoriteItems.some(fav => fav.itemId === folder.id),
+      }));
+
+      const childrenFileFavorites = childrenFile.map(file => ({
+        ...file,
+        isFavourite: favoriteItems.some(fav => fav.itemId === file.itemId),
+      }));
+
       console.log(item,
-        childrenFile,
-        childrenFolder,
+        childrenFileFavorites,
+        childrenFolderFavorites,
       );
 
       return {
         item,
         children: {
-          files: childrenFile,
-          folders: childrenFolder,
+          files: childrenFileFavorites,
+          folders: childrenFolderFavorites,
         },
       };
 

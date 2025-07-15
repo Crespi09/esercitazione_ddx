@@ -280,12 +280,28 @@ let ItemService = class ItemService {
                 },
             });
             const childrenFolder = itemSons.filter(son => !childrenFile.some(file => file.itemId === son.id));
-            console.log(item, childrenFile, childrenFolder);
+            const favoriteItems = await this.prisma.favorite.findMany({
+                where: {
+                    userId: user.id,
+                    itemId: {
+                        in: itemSons.map(son => son.id),
+                    },
+                },
+            });
+            const childrenFolderFavorites = childrenFolder.map(folder => ({
+                ...folder,
+                isFavourite: favoriteItems.some(fav => fav.itemId === folder.id),
+            }));
+            const childrenFileFavorites = childrenFile.map(file => ({
+                ...file,
+                isFavourite: favoriteItems.some(fav => fav.itemId === file.itemId),
+            }));
+            console.log(item, childrenFileFavorites, childrenFolderFavorites);
             return {
                 item,
                 children: {
-                    files: childrenFile,
-                    folders: childrenFolder,
+                    files: childrenFileFavorites,
+                    folders: childrenFolderFavorites,
                 },
             };
         }

@@ -33,7 +33,7 @@ BACKEND
 
 
 			ARCHIVIAZIONE
-	- @ API get spazio archiviazione disponibile  ( non so se contare anche i file condivisi )
+	+ @ API get spazio archiviazione disponibile  ( non so se contare anche i file condivisi )
 	@ API get spazio archiviazione totale ( ? )
 
 

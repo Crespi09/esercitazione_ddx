@@ -77,6 +77,7 @@ export declare class ItemController {
         };
         children: {
             files: {
+                isFavourite: boolean;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
@@ -87,6 +88,7 @@ export declare class ItemController {
                 itemId: number;
             }[];
             folders: {
+                isFavourite: boolean;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
